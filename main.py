@@ -118,6 +118,8 @@ class overworld():#level selection stuff
 class level():#level
     def __init__(self):
         self.level='level'
+        self.blocks = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
 
     def select_level(self,level):
         self.blocks, self.enemies = tools.load_level("levels/"+self.level+str(level))
@@ -239,8 +241,8 @@ while True:#Game loop
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
 
-    blocks.update(-scroll[0],-scroll[1])
-    blocks.draw(game.display)
+    map.blocks.update(-scroll[0],-scroll[1])
+    map.blocks.draw(game.display)
 
 
     for event in pygame.event.get():
@@ -267,14 +269,11 @@ while True:#Game loop
 
     game.start_menu(False)
     world.world_select()
-<<<<<<< HEAD
-    move_player(mario,blocks)
-=======
-
     move_player(mario,map.blocks)
 
-    map.blocks.draw(game.display)
->>>>>>> a9bf326948e395a4a2ae4a86891a6f7a7f234665
+    #move_player(mario,map.blocks)
+
+    #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
 
     if(check_death(mario)):
