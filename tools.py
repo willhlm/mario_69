@@ -25,6 +25,9 @@ def load_level(path):
             elif(tile == '1'):
                 new_block = entities.Block(1,x*16,y*16,True)
                 blocks.add(new_block)
+            elif(tile == '3'):
+                new_block = entities.Block(3,x*16,y*16,False)
+                blocks.add(new_block)
             y += 1
         x+= 1
 
