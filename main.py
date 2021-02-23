@@ -72,14 +72,15 @@ class GUI():
             game.screen.blit(go_surface,go_rect)
             pygame.display.update()
             clock.tick(60)
-            
+
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key==pygame.K_ESCAPE:
-                        pass
+                        re_spawn()
+                        game.dead=False
 
 class overworld():#level selection stuff
     def __init__(self,active,click=False):
@@ -134,13 +135,16 @@ class level():#level
 class items():#shrooms
     pass
 
-def spawn():
-    pass
+def re_spawn():#restart the whole level
+    mario.rect.topleft=[255,82]
+    mario.hitbox=mario.rect
+    mario.update
 
 def check_death(player):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
+
     return death
 
 def death_animation(player):
@@ -152,7 +156,6 @@ def death_animation(player):
         mario_bros.draw(game.display)
         if(player.rect.bottom > 300):
             break
-
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
@@ -232,13 +235,12 @@ pygame.display.set_caption('Pygame Platformer')
 
 game_font=pygame.font.Font('freesansbold.ttf',40)
 
-
 mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
-
 map=level()
+
 
 game=GUI(False)#The escape botton flag
 game.start_menu()#Start with start game menu
@@ -284,15 +286,12 @@ while True:#Game loop
 
     #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
-
     if(check_death(mario)):
-        break
+        game.dead = True
+        death_animation(mario)
 
-
+        game.game_over_screen()
+    print('push')
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
     clock.tick(120)
-
-death_animation(mario)
-game.dead = True
-game.game_over_screen()
