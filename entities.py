@@ -9,7 +9,7 @@ class Block(pygame.sprite.Sprite):
 
     def __init__(self,img,x_pos,y_pos,breakable):
         super().__init__()
-        self.image = images[img]
+        self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
         self.hitbox = self.rect.inflate(0,0)

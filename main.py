@@ -210,6 +210,8 @@ def move_player(mario, blocks):
             mario.rect.top = col_block.hitbox.bottom
             air_timer = 0
             vertical_momentum = 0
+            if (col_block.breakable):
+                blocks.remove(col_block)
         elif y > 0:
             mario.rect.bottom = col_block.hitbox.top
             air_timer = 0
