@@ -80,21 +80,25 @@ class overworld():#level selection stuff
         self.active=active
         self.click=click
 
+    @staticmethod
+    def draw_map(int):
+        level_surface=game_font.render('level'+str(int),True,(255,255,255))#antialias flag
+        level_rect=level_surface.get_rect(center=(200,100*int))#position
+        return level_surface,level_rect
+
     def world_select(self):
         while self.active:
             game.screen.fill((0,0,0))
-            level1_surface=game_font.render('level1',True,(255,255,255))#antialias flag
-            level1_rect=level1_surface.get_rect(center=(200,100))#position
 
-            level2_surface=game_font.render('level2',True,(255,255,255))#antialias flag
-            level2_rect=level1_surface.get_rect(center=(200,300))#position
+            for i in range(1,3):
+                level_surface,level_rect=overworld.draw_map(i)
+                pygame.draw.rect(game.screen,(255,0,0),level_rect)
+                game.screen.blit(level_surface,level_rect)
 
-            pygame.draw.rect(game.screen,(255,0,0),level1_rect)
-            pygame.draw.rect(game.screen,(255,0,0),level2_rect)
-
-            if level1_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
-                self.active=False
-                self.click=False
+                if level_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
+                    self.active=False
+                    self.click=False
+                    map.select_level(i)
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -109,16 +113,14 @@ class overworld():#level selection stuff
                         game.ESC=True
                         game.start_menu(False)
 
-            game.screen.blit(level1_surface,level1_rect)
-            game.screen.blit(level2_surface,level2_rect)
-
             pygame.display.update()
 
 class level():#level
-    def __init__(self,level):
+    def __init__(self):
         self.level='level'
-        self.surface=game_font.render(self.level,True,(255,255,255))#antialias flag
-        self.rect=self.surface.get_rect(center=(200,100))#position
+
+    def select_level(self,level):
+        self.blocks, self.enemies = tools.load_level("levels/"+self.level+str(level))
 
 class items():#shrooms
     pass
@@ -224,8 +226,8 @@ mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
-blocks, enemies = tools.load_level("levels/level1")
 
+map=level()
 
 game=GUI(False)#The escape botton flag
 game.start_menu()#Start with start game menu
@@ -265,7 +267,14 @@ while True:#Game loop
 
     game.start_menu(False)
     world.world_select()
+<<<<<<< HEAD
     move_player(mario,blocks)
+=======
+
+    move_player(mario,map.blocks)
+
+    map.blocks.draw(game.display)
+>>>>>>> a9bf326948e395a4a2ae4a86891a6f7a7f234665
     mario_bros.draw(game.display)
 
     if(check_death(mario)):
