@@ -72,7 +72,14 @@ class GUI():
             game.screen.blit(go_surface,go_rect)
             pygame.display.update()
             clock.tick(60)
-
+            
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == KEYDOWN:
+                    if event.key==pygame.K_ESCAPE:
+                        pass
 
 class overworld():#level selection stuff
     def __init__(self,active,click=False):
