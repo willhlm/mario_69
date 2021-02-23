@@ -146,23 +146,22 @@ def re_spawn():#restart the whole level
     mario.hitbox=mario.rect
     mario.update
     map.blocks=[]
-
     map.select_level(world.level)
 
 def check_death(player):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
-
     return death
 
 def death_animation(player):
     vertical_momentum = -5
     while True:
-        vertical_momentum += 0.3
+        vertical_momentum -= 0.3
         game.display.fill((120,180,255))
         move_player(player, blocks)
         mario_bros.draw(game.display)
+        print(player.rect.bottom)
         if(player.rect.bottom > 300):
             break
 
@@ -249,7 +248,6 @@ mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
 map=level()
-
 
 game=GUI(False)#The escape botton flag
 game.start_menu()#Start with start game menu
