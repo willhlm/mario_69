@@ -136,13 +136,16 @@ class items():#shrooms
     pass
 
 def re_spawn():#restart the whole level
-    global vertical_momentum
-    global horizontal_momentum
-    vertical_momentum = 0
-    horizontal_momentum = 0
+    global moving_right
+    global moving_left
+
+    moving_right=False
+    moving_left=False
     mario.rect.topleft=[255,82]
     mario.hitbox=mario.rect
     mario.update
+    map.blocks=[]
+    print(map.blocks)
     map.select_level(1)
 
 def check_death(player):
@@ -260,7 +263,6 @@ while True:#Game loop
     map.blocks.update(-scroll[0],-scroll[1])
     map.blocks.draw(game.display)
 
-
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -294,7 +296,6 @@ while True:#Game loop
     if(check_death(mario)):
         game.dead = True
         death_animation(mario)
-
         game.game_over_screen()
 
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
