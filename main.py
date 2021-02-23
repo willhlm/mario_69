@@ -51,6 +51,11 @@ def move_player(mario, blocks):
             air_timer = 0
             vertical_momentum = 0
 
+    if(x > 0):
+        mario.set_img(0)
+    elif(x < 0):
+        mario.set_img(1)
+
     air_timer += 1
 
 
