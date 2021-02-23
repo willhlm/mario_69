@@ -139,6 +139,7 @@ def re_spawn():#restart the whole level
     mario.rect.topleft=[255,82]
     mario.hitbox=mario.rect
     mario.update
+    map.select_level(1)
 
 def check_death(player):
     death = False
@@ -291,7 +292,7 @@ while True:#Game loop
         death_animation(mario)
 
         game.game_over_screen()
-    print('push')
+
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
     clock.tick(120)
