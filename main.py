@@ -2,30 +2,57 @@ import pygame, sys, random, tools, entities
 from pygame import mixer#sounds
 from pygame.locals import *
 
-vertical_momentum = 0
-horizontal_momentum = 0
 air_timer = 0
 moving_right = False
 moving_left = False
+jump_trigger = False
+on_ground = False
+vertical_momentum = 0
 
-def player_move(player, block):
+#def check_block_col(player,block)
+
+#rollback function to be used with spritecollideany() below
+def collided(sprite, other):
+    return sprite.hitbox.colliderect(other.hitbox)
+    #return sprite.hitbox.bottom == other.hitbox.top or sprite.hitbox.colliderect(other.hitbox)
+
+def move_player(mario, blocks):
 
     global vertical_momentum
-    global horizontal_momentum
+    global air_timer
 
-    if(pygame.sprite.spritecollide(player,block,False)):
-        vertical_momentum = 0
-    else:
-        vertical_momentum = 3
+    x,y=0,0
+    if(moving_left):
+        x -= 2
+    if(moving_right):
+        x += 2
+    vertical_momentum += 0.2
+    if(vertical_momentum > 4):
+        vertical_momentum = 4
+    y=vertical_momentum
 
-    if(moving_right and player.rect.topleft[0] < 304):
-        horizontal_momentum = 2
-    elif(moving_left and player.rect.topleft[0] > 0):
-        horizontal_momentum = -2
-    else:
-        horizontal_momentum = 0
+    mario.update([x,0])
+    col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
+    if(col_block):
+        if x > 0:
+            mario.rect.right = col_block.hitbox.left
+        elif x < 0:
+            mario.rect.left = col_block.hitbox.right
 
-    return horizontal_momentum, vertical_momentum
+    mario.update([0,y])
+    col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
+    if(col_block):
+        if y < 0:
+            mario.rect.top = col_block.hitbox.bottom
+            air_timer = 0
+            vertical_momentum = 0
+        elif y > 0:
+            mario.rect.bottom = col_block.hitbox.top
+            air_timer = 0
+            vertical_momentum = 0
+
+    air_timer += 1
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -39,7 +66,7 @@ screen = pygame.display.set_mode(WINDOW_SIZE,0,32) # initiate the window
 display = pygame.Surface((display_width,display_height)) # used as the surface for rendering, which is scaled
 
 
-mario = entities.Player(50,100)
+mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
@@ -54,23 +81,27 @@ while True:#Game loop
             pygame.QUIT()
             sys.exit()
         if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                if air_timer < 10:
+                    vertical_momentum = -5
             if event.key == K_RIGHT:
                 moving_right = True
             if event.key == K_LEFT:
                 moving_left = True
+
         if event.type == KEYUP:
             if event.key == K_RIGHT:
                 moving_right = False
             if event.key == K_LEFT:
                 moving_left = False
 
-    mario_bros.update(player_move(mario,blocks))
+    move_player(mario,blocks)
 
-    mario_bros.draw(display)
     blocks.draw(display)
+    mario_bros.draw(display)
     screen.blit(pygame.transform.scale(display,WINDOW_SIZE),(0,0))
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(120)
 
 class overworld():#level selection stuff
     pass
