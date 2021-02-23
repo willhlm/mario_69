@@ -107,6 +107,7 @@ class overworld():#level selection stuff
                     self.active=False
                     self.click=False
                     map.select_level(i)
+                    self.level=i
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -145,8 +146,8 @@ def re_spawn():#restart the whole level
     mario.hitbox=mario.rect
     mario.update
     map.blocks=[]
-    print(map.blocks)
-    map.select_level(1)
+
+    map.select_level(world.level)
 
 def check_death(player):
     death = False
