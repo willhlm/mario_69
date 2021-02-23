@@ -20,7 +20,10 @@ def load_level(path):
         y = 0
         for tile in column:
             if(tile == '2'):
-                new_block = entities.Block(ground_img,x*16,y*16)
+                new_block = entities.Block(2,x*16,y*16,False)
+                blocks.add(new_block)
+            elif(tile == '1'):
+                new_block = entities.Block(1,x*16,y*16,True)
                 blocks.add(new_block)
             y += 1
         x+= 1
