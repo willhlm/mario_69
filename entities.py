@@ -38,7 +38,8 @@ class Player(pygame.sprite.Sprite):#mario
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
         self.hitbox = self.rect
-
+        self.life=3
+        
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
         self.hitbox = self.rect

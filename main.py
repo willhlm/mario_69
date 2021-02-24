@@ -79,8 +79,11 @@ class GUI():
                     sys.exit()
                 if event.type == KEYDOWN:
                     if event.key==pygame.K_ESCAPE:
-                        re_spawn()
                         game.dead=False
+                        mario.life=4
+                        game.start_menu()#back to start
+                        world.active=True
+                        world.world_select()
 
 class overworld():#level selection stuff
     def __init__(self,active,click=False):
@@ -152,16 +155,18 @@ def check_death(player):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
+        mario.life-=1
+        re_spawn()
     return death
 
 def death_animation(player):
-    vertical_momentum = -5
+    vertical_momentum= -5
     while True:
-        vertical_momentum -= 0.3
-        game.display.fill((120,180,255))
-        move_player(player, blocks)
+
+        #game.display.fill((120,180,255))
+        move_player(player, map.blocks,map.enemies)
         mario_bros.draw(game.display)
-        print(player.rect.bottom)
+
         if(player.rect.bottom > 300):
             break
 
@@ -339,12 +344,15 @@ while True:#Game loop
     #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
-    if(check_death(mario)):
+
+    if mario.life<=0:
         game.dead = True
         death_animation(mario)
         game.game_over_screen()
 
-    enemy_AI(map.enemies,map.blocks)
+    check_death(mario)
+
+    #enemy_AI(map.enemies,map.blocks)
 
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
