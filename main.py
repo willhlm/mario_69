@@ -185,16 +185,16 @@ def move_player(mario, blocks,enemies):
             horizontal_momentum += 0.1
         else:
             horizontal_momentum += 0.2
-        if(horizontal_momentum > 3):
-            horizontal_momentum = 3
+        if(horizontal_momentum > 2):
+            horizontal_momentum = 2
         mario.set_img((int)(2 + horizontal_momentum * run_timer % 3))
     if(moving_left):
         if(horizontal_momentum > -0.7):
             horizontal_momentum -= 0.1
         else:
             horizontal_momentum -= 0.2
-        if(horizontal_momentum < -3):
-            horizontal_momentum = -3
+        if(horizontal_momentum < -2):
+            horizontal_momentum = -2
         mario.set_img((int)(5 + horizontal_momentum * run_timer % 3))
     if not moving_left and not moving_right:
         if horizontal_momentum < -1:
@@ -237,7 +237,7 @@ def move_player(mario, blocks,enemies):
 
 
     #collision between groups
-    enemies.update(0,0.1)
+    enemies.update(0,0.2,False)
     for enemy in enemies:
         col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
         if col_block:
@@ -245,14 +245,14 @@ def move_player(mario, blocks,enemies):
             enemy.vert_momentum = 0
 
 
-    enemies.update(-scroll[0],0)
+    enemies.update(0,0,False)
     for enemy in enemies:
         col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
         if col_block:
             if enemy.dir > 0:
-                enemy.rect.right = col_block.hitbox.left - 1
+                enemy.rect.right = col_block.hitbox.left - 2
             elif enemy.dir < 0:
-                enemy.rect.left = col_block.hitbox.right + 1
+                enemy.rect.left = col_block.hitbox.right + 2
             enemy.dir *= -1
 
     #col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
@@ -302,8 +302,9 @@ while True:#Game loop
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
     map.blocks.update(-scroll[0],-scroll[1])
     map.blocks.draw(game.display)
+    map.enemies.update(-scroll[0],0, True)
 
-    map.enemies.draw(game.display)
+
     #enemy_AI()
 
 
@@ -337,6 +338,7 @@ while True:#Game loop
 
     #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
+    map.enemies.draw(game.display)
     if(check_death(mario)):
         game.dead = True
         death_animation(mario)
@@ -346,4 +348,4 @@ while True:#Game loop
 
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
-    clock.tick(120)
+    clock.tick(60)

@@ -72,16 +72,22 @@ class Enemy(pygame.sprite.Sprite):
         self.vert_momentum = 0
         self.hitbox = self.rect
 
-    def update(self,x_pos,y_pos):
-
-        if y_pos == 0:
-            self.update_x(x_pos)
+    def update(self,x_pos,y_pos,scroll):
+        if (scroll):
+            self.update_scroll(x_pos)
+        elif y_pos == 0:
+            self.update_x()
         elif x_pos == 0:
             self.vert_momentum += y_pos
             self.update_y(y_pos)
 
-    def update_x(self,x_pos):
-        self.rect.topleft = [self.rect.topleft[0] + (self.vel * self.dir) + x_pos, self.rect.topleft[1]]
+    def update_x(self):
+        self.rect.topleft = [self.rect.topleft[0] + (self.vel * self.dir), self.rect.topleft[1]]
+        self.hitbox = self.rect
+
+    def update_scroll(self,x_pos):
+        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1]]
+        #self.rect.topleft = [self.rect.topleft[0], self.rect.topleft[1]]
         self.hitbox = self.rect
 
     def update_y(self,y_pos):
