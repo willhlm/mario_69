@@ -148,29 +148,26 @@ def re_spawn():#restart the whole level
     map.blocks=[]
     map.select_level(world.level)
 
-def check_death(player):
+def check_death(player,enemies):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
+        return Death
+
+    enemy = pygame.sprite.spritecollideany(player,enemies,collided)
+    if enemy:
+        if ((player.rect.right - enemy.rect.left > 0) or (player.rect.left - enemy.rect.right < 0)):
+            death = True
+            return death
     return death
 
-def death_animation(player):
-    vertical_momentum = -5
-    while True:
-        vertical_momentum -= 0.3
-        game.display.fill((120,180,255))
-        move_player(player, blocks)
-        mario_bros.draw(game.display)
-        print(player.rect.bottom)
-        if(player.rect.bottom > 300):
-            break
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
     return sprite.hitbox.colliderect(other.hitbox)
     #return sprite.hitbox.bottom == other.hitbox.top or sprite.hitbox.colliderect(other.hitbox)
 
-def move_player(mario, blocks,enemies):
+def move_player(mario, blocks,enemies,dead):
 
     global vertical_momentum
     global horizontal_momentum
@@ -198,9 +195,9 @@ def move_player(mario, blocks,enemies):
         mario.set_img((int)(5 + horizontal_momentum * run_timer % 3))
     if not moving_left and not moving_right:
         if horizontal_momentum < -1:
-            horizontal_momentum += 0.2
+            horizontal_momentum += 0.1
         elif horizontal_momentum > 1:
-            horizontal_momentum -= 0.2
+            horizontal_momentum -= 0.1
         else:
             horizontal_momentum = 0
             run_timer = 0
@@ -223,7 +220,7 @@ def move_player(mario, blocks,enemies):
 
     mario.update([0,y-scroll[1]])
     col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
-    if(col_block):
+    if(col_block and not dead):
         if y < 0:
             mario.rect.top = col_block.hitbox.bottom
             air_timer = 0
@@ -255,17 +252,6 @@ def move_player(mario, blocks,enemies):
                 enemy.rect.left = col_block.hitbox.right + 2
             enemy.dir *= -1
 
-    #col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
-    #if col_block:
-        #for piece_mob, static_mob in col_block.items():
-            #if piece_mob.dir>0:
-                #piece_mob.dir = -1*piece_mob.dir#invert the direction
-            #elif piece_mob.dir<0:
-                #piece_mob.dir=1*piece_mob.dir#invert the direction
-                #piece_mob.rect=static_mob.rect
-            #piece_mob.vel=[-1*x for x in piece_mob.vel]#invert the direction
-            #piece_mob.dir=-1*piece_mob.dir
-            #piece_mob.vel[0]=piece_mob.dir-scroll[0]
 
     air_timer += 1
 
@@ -278,7 +264,7 @@ game_font=pygame.font.Font('freesansbold.ttf',40)
 mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
-
+real_dead = False
 
 map=level()
 
@@ -304,9 +290,19 @@ while True:#Game loop
     map.blocks.draw(game.display)
     map.enemies.update(-scroll[0],0, True)
 
-
-    #enemy_AI()
-
+    dead = False
+    if not real_dead:
+        dead = check_death(mario,map.enemies)
+    if(dead):
+        real_dead = True
+        vertical_momentum = -5
+        moving_right = False
+        moving_left = False
+    if(real_dead and mario.rect.bottom > 230):
+        break
+    elif(real_dead):
+        mario_bros.update([0,vertical_momentum])
+        vertical_momentum += 0.1
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -317,9 +313,11 @@ while True:#Game loop
                 if air_timer < 10:
                     vertical_momentum = -5
             if event.key == K_RIGHT:
-                moving_right = True
+                if not real_dead or dead:
+                    moving_right = True
             if event.key == K_LEFT:
-                moving_left = True
+                if not real_dead or dead:
+                    moving_left = True
             if event.key==pygame.K_ESCAPE:
                 game.ESC=True
 
@@ -332,20 +330,20 @@ while True:#Game loop
 
     game.start_menu(False)
     world.world_select()
-    move_player(mario,map.blocks,map.enemies)
+    move_player(mario,map.blocks,map.enemies,real_dead)
 
     #move_player(mario,map.blocks)
 
     #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
-    if(check_death(mario)):
-        game.dead = True
-        death_animation(mario)
-        game.game_over_screen()
+
 
     enemy_AI(map.enemies,map.blocks)
 
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
     clock.tick(60)
+
+game.dead = True
+game.game_over_screen()
