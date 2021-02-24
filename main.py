@@ -250,9 +250,9 @@ def move_player(mario, blocks,enemies):
         col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
         if col_block:
             if enemy.dir > 0:
-                enemy.rect.right = col_block.hitbox.left
+                enemy.rect.right = col_block.hitbox.left - 1
             elif enemy.dir < 0:
-                enemy.rect.left = col_block.hitbox.right
+                enemy.rect.left = col_block.hitbox.right + 1
             enemy.dir *= -1
 
     #col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
