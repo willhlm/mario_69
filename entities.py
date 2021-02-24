@@ -73,10 +73,11 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = self.rect
 
     def update(self,x_pos,y_pos):
-        self.vert_momentum += y_pos
+
         if y_pos == 0:
             self.update_x(x_pos)
         elif x_pos == 0:
+            self.vert_momentum += y_pos
             self.update_y(y_pos)
 
     def update_x(self,x_pos):

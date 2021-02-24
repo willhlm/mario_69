@@ -244,14 +244,24 @@ def move_player(mario, blocks,enemies):
             enemy.rect.bottom = col_block.hitbox.top
             enemy.vert_momentum = 0
 
+
     enemies.update(-scroll[0],0)
-    col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
-    if col_block:
-        for piece_mob, static_mob in col_block.items():
-            if piece_mob.dir>0:
-                piece_mob.dir = -1*piece_mob.dir#invert the direction
-            elif piece_mob.dir<0:
-                piece_mob.dir=1*piece_mob.dir#invert the direction
+    for enemy in enemies:
+        col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
+        if col_block:
+            if enemy.dir > 0:
+                enemy.rect.right = col_block.hitbox.left
+            elif enemy.dir < 0:
+                enemy.rect.left = col_block.hitbox.right
+            enemy.dir *= -1
+
+    #col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
+    #if col_block:
+        #for piece_mob, static_mob in col_block.items():
+            #if piece_mob.dir>0:
+                #piece_mob.dir = -1*piece_mob.dir#invert the direction
+            #elif piece_mob.dir<0:
+                #piece_mob.dir=1*piece_mob.dir#invert the direction
                 #piece_mob.rect=static_mob.rect
             #piece_mob.vel=[-1*x for x in piece_mob.vel]#invert the direction
             #piece_mob.dir=-1*piece_mob.dir
