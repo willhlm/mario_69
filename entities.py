@@ -57,20 +57,35 @@ class Player(pygame.sprite.Sprite):#mario
         else:
             self.image = self.images[val]
 
-class Enemy(pygame.sprite.Sprite):#mario
-    images={1:pygame.image.load("sprites/gumba_1.gif"),2:pygame.image.load("sprites/turtle_1.gif")}#5
-    vel=[0,0]
+class Enemy(pygame.sprite.Sprite):
+    images={1:pygame.image.load("sprites/gumba_1.gif"),
+            2:pygame.image.load("sprites/turtle_1.gif")}#5
+    vel = 1
 
     def __init__(self,img,x_pos,y_pos):
         super().__init__()
         self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
-        self.enemy_type=img
-        self.dir=1
-        
+        self.enemy_type = img
+        self.dir = 1 # -1 left, 1 right
+        self.vert_momentum = 0
+        self.hitbox = self.rect
+
     def update(self,x_pos,y_pos):
-        self.rect.topleft = [self.rect.topleft[0] + self.vel[0]+x_pos, self.rect.topleft[1] + self.vel[1]]
+        self.vert_momentum += y_pos
+        if y_pos == 0:
+            self.update_x(x_pos)
+        elif x_pos == 0:
+            self.update_y(y_pos)
+
+    def update_x(self,x_pos):
+        self.rect.topleft = [self.rect.topleft[0] + (self.vel * self.dir) + x_pos, self.rect.topleft[1]]
+        self.hitbox = self.rect
+
+    def update_y(self,y_pos):
+        self.rect.topleft = [self.rect.topleft[0], self.rect.topleft[1] + self.vert_momentum]
+        self.hitbox = self.rect
 
     def set_img(self,val):
         # 0 = stand right

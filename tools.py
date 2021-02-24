@@ -30,11 +30,9 @@ def load_level(path):
                 blocks.add(new_block)
             elif(tile=='4'):
                 gumba = entities.Enemy(1,x*16,y*16)
-                gumba.vel=[1,0]
                 enemies.add(gumba)
             elif(tile=='5'):
                 turtle = entities.Enemy(2,x*16,y*16)
-                turtle.vel=[0,0]
                 enemies.add(turtle)
             y += 1
         x+= 1

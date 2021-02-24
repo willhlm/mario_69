@@ -235,22 +235,28 @@ def move_player(mario, blocks,enemies):
             air_timer = 0
             vertical_momentum = 0
 
+
     #collision between groups
+    enemies.update(0,0.1)
+    for enemy in enemies:
+        col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
+        if col_block:
+            enemy.rect.bottom = col_block.hitbox.top
+            enemy.vert_momentum = 0
+
+    enemies.update(-scroll[0],0)
     col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
     if col_block:
-
         for piece_mob, static_mob in col_block.items():
-
-            if piece_mob.vel[0]>0:
-                piece_mob.vel[0]=-1*piece_mob.vel[0]#invert the direction
-            elif piece_mob.vel[0]<0:
-                piece_mob.vel[0]=-1*piece_mob.vel[0]#invert the direction
-            if piece_mob.vel[1]>0:
-                piece_mob.vel[1]=0
+            if piece_mob.dir>0:
+                piece_mob.dir = -1*piece_mob.dir#invert the direction
+            elif piece_mob.dir<0:
+                piece_mob.dir=1*piece_mob.dir#invert the direction
                 #piece_mob.rect=static_mob.rect
             #piece_mob.vel=[-1*x for x in piece_mob.vel]#invert the direction
             #piece_mob.dir=-1*piece_mob.dir
             #piece_mob.vel[0]=piece_mob.dir-scroll[0]
+
     air_timer += 1
 
 pygame.init()
@@ -287,7 +293,6 @@ while True:#Game loop
     map.blocks.update(-scroll[0],-scroll[1])
     map.blocks.draw(game.display)
 
-    map.enemies.update(-scroll[0],0)
     map.enemies.draw(game.display)
     #enemy_AI()
 
