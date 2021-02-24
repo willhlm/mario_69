@@ -170,7 +170,7 @@ def collided(sprite, other):
     return sprite.hitbox.colliderect(other.hitbox)
     #return sprite.hitbox.bottom == other.hitbox.top or sprite.hitbox.colliderect(other.hitbox)
 
-def move_player(mario, blocks):
+def move_player(mario, blocks,enemies):
 
     global vertical_momentum
     global horizontal_momentum
@@ -235,6 +235,22 @@ def move_player(mario, blocks):
             air_timer = 0
             vertical_momentum = 0
 
+    #collision between groups
+    col_block = pygame.sprite.groupcollide(enemies,blocks,False,False)
+    if col_block:
+
+        for piece_mob, static_mob in col_block.items():
+
+            if piece_mob.vel[0]>0:
+                piece_mob.vel[0]=-1*piece_mob.vel[0]#invert the direction
+            elif piece_mob.vel[0]<0:
+                piece_mob.vel[0]=-1*piece_mob.vel[0]#invert the direction
+            if piece_mob.vel[1]>0:
+                piece_mob.vel[1]=0
+                #piece_mob.rect=static_mob.rect
+            #piece_mob.vel=[-1*x for x in piece_mob.vel]#invert the direction
+            #piece_mob.dir=-1*piece_mob.dir
+            #piece_mob.vel[0]=piece_mob.dir-scroll[0]
     air_timer += 1
 
 pygame.init()
@@ -247,20 +263,34 @@ mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
+
 map=level()
 
 game=GUI(False)#The escape botton flag
 game.start_menu()#Start with start game menu
 world=overworld(True)#flag to open after start game menu
 
+def enemy_AI(enemies,blocks):
+    gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
+    #turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
+    for i in gumba_list:
+        #i.vel[0]=piece_mob.dir-scroll[0]
+        pass
+        #print(i.vel[0])
+
+
 while True:#Game loop
     game.display.fill((120,180,255))
 
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
-
     map.blocks.update(-scroll[0],-scroll[1])
     map.blocks.draw(game.display)
+
+    map.enemies.update(-scroll[0],0)
+    map.enemies.draw(game.display)
+    #enemy_AI()
+
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -286,7 +316,7 @@ while True:#Game loop
 
     game.start_menu(False)
     world.world_select()
-    move_player(mario,map.blocks)
+    move_player(mario,map.blocks,map.enemies)
 
     #move_player(mario,map.blocks)
 
@@ -296,6 +326,8 @@ while True:#Game loop
         game.dead = True
         death_animation(mario)
         game.game_over_screen()
+
+    enemy_AI(map.enemies,map.blocks)
 
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
