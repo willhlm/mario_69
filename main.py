@@ -377,6 +377,7 @@ while True:#Game loop
     check_goal(mario, map.goals)
 
     if map.clear:
+        map.clear = False
         game.gameover=True
         game.game_over_screen()
 
