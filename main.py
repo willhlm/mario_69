@@ -211,6 +211,9 @@ def move_player(mario, blocks,enemies):
     x=horizontal_momentum
     y=vertical_momentum
 
+    if(air_timer > 5):
+        mario.set_img(1)
+
 
     mario.update([x-scroll[0],0])
     col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
