@@ -114,6 +114,6 @@ class Gumba(Enemy):
         self.frame=1
         self.alive=True
         self.dead_time=0
-        
+
     def set_img(self,img):
-        self.image=self.images[img]
+        self.image=self.images[img]        

@@ -239,7 +239,7 @@ def move_player(mario, blocks,enemies):
     if (col_enemy and not mario.dead):#stomp
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
             col_enemy.alive=False
-
+            vertical_momentum=-2
 
     #collision between groups
     enemies.update(0,0.2,False)
