@@ -341,15 +341,6 @@ while True:#Game loop
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
 
-<<<<<<< HEAD
-=======
-    if mario.life<=0:
-        game.dead = True
-        death_animation(mario)
-        game.game_over_screen()
->>>>>>> 7fac7769b4af04552e092b07515f36e05eef8548
-
-    check_death(mario)
 
     #enemy_AI(map.enemies,map.blocks)
 
