@@ -12,8 +12,6 @@ horizontal_momentum = 0
 vertical_momentum = 0
 true_scroll = [0,0]
 scroll = [0,0]
-frame_2=[1,2]
-dead_timer=0
 
 mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
@@ -177,7 +175,6 @@ def move_player(mario, blocks,enemies):
     global horizontal_momentum
     global air_timer
     global run_timer
-    global dead_timer
     run_timer += 0.05
 
     x,y=0,0
@@ -244,7 +241,6 @@ def move_player(mario, blocks,enemies):
             col_enemy.alive=False
 
 
-
     #collision between groups
     enemies.update(0,0.2,False)
     for enemy in enemies:
@@ -284,7 +280,6 @@ game.start_menu()#Start with start game menu
 world=overworld(True)#flag to open after start game menu
 
 def enemy_animation(enemies):
-    global dead_timer
     gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
     #turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
     for i in gumba_list:
@@ -295,11 +290,10 @@ def enemy_animation(enemies):
             i.frame+=1
         elif i.alive==False:
             i.set_img(3)
-            dead_timer+=1
+            i.dead_time+=1
             i.vel=0
-            if dead_timer>10:
+            if i.dead_time>10:
                 i.kill()
-                dead_timer=0
 
 def death_animation():
     global moving_right

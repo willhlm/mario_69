@@ -109,11 +109,11 @@ class Gumba(Enemy):
             2:pygame.image.load("sprites/gumba_2.gif"),
             3:pygame.image.load("sprites/gumba_3.gif")}
 
-
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
         self.alive=True
-
+        self.dead_time=0
+        
     def set_img(self,img):
         self.image=self.images[img]
