@@ -152,7 +152,7 @@ def check_death(player,enemies):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
-        return Death
+        return death
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
     if enemy:
