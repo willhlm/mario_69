@@ -375,6 +375,7 @@ while True:#Game loop
     move_player(mario,map.blocks,map.enemies)
     enemy_animation(map.enemies)
 
+    print('Just for william')
 
     draw()
-    clock.tick(60)
+    clock.tick(120)
