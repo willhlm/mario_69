@@ -230,8 +230,10 @@ def move_player(mario, blocks,enemies):
     if(col_block):
         if x > 0:
             mario.rect.right = col_block.hitbox.left
+            horizontal_momentum /= 2
         elif x < 0:
             mario.rect.left = col_block.hitbox.right
+            horizontal_momentum /= 2
 
     mario.update([0,y-scroll[1]])
 
@@ -369,7 +371,10 @@ while True:#Game loop
         if event.type == KEYDOWN:
             if event.key == K_SPACE:
                 if air_timer < 10:
-                    vertical_momentum = -5
+                    if sprint:
+                        vertical_momentum = -5
+                    else:
+                        vertical_momentum = -4.2
             if event.key == K_RIGHT and not mario.dead:
                 moving_right = True
             if event.key == K_LEFT and not mario.dead:
