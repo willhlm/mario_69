@@ -12,6 +12,8 @@ horizontal_momentum = 0
 vertical_momentum = 0
 true_scroll = [0,0]
 scroll = [0,0]
+frame_2=[1,2]
+dead_timer=0
 
 mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
@@ -156,9 +158,10 @@ def check_death(player,enemies):
         mario.dead = True
         mario.life-=1
         death_animation()
+
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
     if enemy:
-        if ((player.rect.right - enemy.rect.left > 0) or (player.rect.left - enemy.rect.right < 0)):
+        if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.dead = True
             mario.life-=1
             death_animation()
@@ -174,7 +177,7 @@ def move_player(mario, blocks,enemies):
     global horizontal_momentum
     global air_timer
     global run_timer
-
+    global dead_timer
     run_timer += 0.05
 
     x,y=0,0
@@ -238,7 +241,8 @@ def move_player(mario, blocks,enemies):
 
     if (col_enemy and not mario.dead):#stomp
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
-            col_enemy.kill()
+            col_enemy.alive=False
+
 
 
     #collision between groups
@@ -273,20 +277,29 @@ mario = entities.Player(55,82)
 mario_bros = pygame.sprite.Group()
 mario_bros.add(mario)
 
-
 map=level()
 
 game=GUI(False)#The escape botton flag
 game.start_menu()#Start with start game menu
 world=overworld(True)#flag to open after start game menu
 
-def enemy_AI(enemies,blocks):
+def enemy_animation(enemies):
+    global dead_timer
     gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
     #turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
     for i in gumba_list:
-        #i.vel[0]=piece_mob.dir-scroll[0]
-        pass
-        #print(i.vel[0])
+        if i.alive:
+            if i.frame>=20:
+                i.frame=0
+            i.set_img(i.frame//10+1)
+            i.frame+=1
+        elif i.alive==False:
+            i.set_img(3)
+            dead_timer+=1
+            i.vel=0
+            if dead_timer>10:
+                i.kill()
+                dead_timer=0
 
 def death_animation():
     global moving_right
@@ -352,6 +365,8 @@ while True:#Game loop
     world.world_select()
 
     move_player(mario,map.blocks,map.enemies)
+    enemy_animation(map.enemies)
+
 
     draw()
     clock.tick(60)

@@ -60,8 +60,6 @@ class Player(pygame.sprite.Sprite):#mario
             self.image = self.images[val]
 
 class Enemy(pygame.sprite.Sprite):
-    images={1:pygame.image.load("sprites/gumba_1.gif"),
-            2:pygame.image.load("sprites/turtle_1.gif")}#5
     vel = 1
 
     def __init__(self,img,x_pos,y_pos):
@@ -69,10 +67,10 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
-        self.enemy_type = img
         self.dir = 1 # -1 left, 1 right
         self.vert_momentum = 0
         self.hitbox = self.rect
+        self.enemy_type=img
 
     def update(self,x_pos,y_pos,scroll):
         if (scroll):
@@ -105,3 +103,17 @@ class Enemy(pygame.sprite.Sprite):
             self.dir = self.images[val]
         elif(val in range(5,7)):
             self.dir = self.images[val]
+
+class Gumba(Enemy):
+    images={1:pygame.image.load("sprites/gumba_1.gif"),
+            2:pygame.image.load("sprites/gumba_2.gif"),
+            3:pygame.image.load("sprites/gumba_3.gif")}
+
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__(img,x_pos,y_pos)
+        self.frame=1
+        self.alive=True
+
+    def set_img(self,img):
+        self.image=self.images[img]
