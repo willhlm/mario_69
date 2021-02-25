@@ -221,9 +221,8 @@ def move_player(mario, blocks,enemies):
             mario.rect.left = col_block.hitbox.right
 
     mario.update([0,y-scroll[1]])
-    col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
-    col_enemy = pygame.sprite.spritecollideany(mario,enemies,collided=None)
 
+    col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
     if(col_block and not mario.dead):
         if y < 0:
             mario.rect.top = col_block.hitbox.bottom
@@ -236,6 +235,8 @@ def move_player(mario, blocks,enemies):
             air_timer = 0
             vertical_momentum = 0
 
+    #stomp
+    col_enemy = pygame.sprite.spritecollideany(mario,enemies,collided=None)
     if (col_enemy and not mario.dead):#stomp
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
             col_enemy.alive=False
@@ -260,7 +261,6 @@ def move_player(mario, blocks,enemies):
                 enemy.rect.left = col_block.hitbox.right + 2
             enemy.dir *= -1
 
-
     air_timer += 1
 
 pygame.init()
@@ -281,7 +281,8 @@ world=overworld(True)#flag to open after start game menu
 
 def enemy_animation(enemies):
     gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
-    #turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
+    turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
+
     for i in gumba_list:
         if i.alive:
             if i.frame>=20:
@@ -290,6 +291,19 @@ def enemy_animation(enemies):
             i.frame+=1
         elif i.alive==False:
             i.set_img(3)
+            i.dead_time+=1
+            i.vel=0
+            if i.dead_time>10:
+                i.kill()
+
+    for i in turtle_list:
+        if i.alive:
+            if i.frame>=20:
+                i.frame=0
+            i.set_img(i.frame//10+1)
+            i.frame+=1
+        elif i.alive==False:
+            #i.set_img(3)
             i.dead_time+=1
             i.vel=0
             if i.dead_time>10:

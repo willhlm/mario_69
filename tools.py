@@ -31,9 +31,9 @@ def load_level(path):
             elif(tile=='4'):
                 gumba = entities.Gumba(1,x*16,y*16)
                 enemies.add(gumba)
-            #elif(tile=='5'):
-            #    turtle = entities.Enemy(2,x*16,y*16)
-            #    enemies.add(turtle)
+            elif(tile=='5'):
+                turtle = entities.Turtle(2,x*16,y*16)
+                enemies.add(turtle)
             y += 1
         x+= 1
 

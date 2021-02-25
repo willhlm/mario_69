@@ -116,4 +116,22 @@ class Gumba(Enemy):
         self.dead_time=0
 
     def set_img(self,img):
-        self.image=self.images[img]        
+        self.image=self.images[img]
+
+class Turtle(Enemy):
+    images={1:pygame.image.load("sprites/turtle_1.gif"),
+            2:pygame.image.load("sprites/turtle_2.gif"),
+            3:pygame.image.load("sprites/turtle_3.gif"),
+            4:pygame.image.load("sprites/turtle_4.gif")}
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__(img,x_pos,y_pos)
+        self.frame=1
+        self.alive=True
+        self.dead_time=0
+
+    def set_img(self,img):
+        if self.dir>0:
+            self.image=self.images[img]
+        else:
+            self.image=self.images[img+2]
