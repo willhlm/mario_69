@@ -286,6 +286,26 @@ def enemy_AI(enemies,blocks):
         pass
         #print(i.vel[0])
 
+def death_animation():
+    global dead_ani
+    global temp
+    global moving_right
+    global moving_left
+
+    if not mario.dead:
+        temp=check_death(mario,map.enemies)
+    if temp:#enter once
+        dead_ani = -10
+        moving_right = False
+        moving_left = False
+        mario.life-=1
+    if(mario.dead and mario.rect.bottom > 230):
+        re_spawn()
+    elif(mario.dead):
+        mario_bros.update([0,dead_ani])
+        dead_ani += 0.2
+        temp=False
+    return temp
 
 while True:#Game loop
     game.display.fill((120,180,255))
@@ -296,34 +316,11 @@ while True:#Game loop
     map.blocks.draw(game.display)
     map.enemies.update(-scroll[0],0, True)
 
-    if mario.life>0:
-        #animation
-        if not mario.dead:
-            temp=check_death(mario,map.enemies)
+    death_animation()
 
-        if temp:#enter once
-            dead_ani = -10
-            moving_right = False
-            moving_left = False
-            mario.life-=1
-
-        if(mario.dead and mario.rect.bottom > 230):
-            re_spawn()
-
-
-        elif(mario.dead):
-
-            mario_bros.update([0,dead_ani])
-            dead_ani += 0.2
-            temp=False
-
-    else:
-
+    if mario.life<=0:
         game.gameover=True
         game.game_over_screen()
-
-
-
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -348,17 +345,10 @@ while True:#Game loop
 
 
     game.start_menu(False)
-
-
     world.world_select()
-
 
     move_player(mario,map.blocks,map.enemies)
 
-
-    #move_player(mario,map.blocks)
-
-    #map.blocks.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
 
