@@ -19,6 +19,21 @@ class Block(pygame.sprite.Sprite):
         self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
         self.hitbox = self.rect.inflate(0,0)
 
+class BG_object(pygame.sprite.Sprite):
+
+    images = {0: pygame.image.load("sprites/hill.gif"),
+              1: pygame.image.load("sprites/cloud1.gif")
+              }
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__()
+        self.image = self.images[img]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x_pos,y_pos]
+
+    def update(self,x_pos,y_pos):
+        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
+
 class Player(pygame.sprite.Sprite):#mario
 
     images = {0: pygame.image.load("sprites/stand_right.gif"),
@@ -72,7 +87,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
-        self.dir = 1 # -1 left, 1 right
+        self.dir = -1 # -1 left, 1 right
         self.vert_momentum = 0
         self.hitbox = self.rect
         self.enemy_type=img

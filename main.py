@@ -13,6 +13,7 @@ horizontal_momentum = 0
 vertical_momentum = 0
 true_scroll = [0,0]
 scroll = [0,0]
+bg_color = (92,148,252)
 
 mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
@@ -137,9 +138,10 @@ class level():#level
         self.level='level'
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.bg_objects = pygame.sprite.Group()
 
     def select_level(self,level):
-        self.blocks, self.enemies = tools.load_level("levels/"+self.level+str(level))
+        self.blocks, self.enemies, self.bg_objects = tools.load_level("levels/"+self.level+str(level))
 
 class items():#shrooms
     pass
@@ -344,7 +346,8 @@ def death_animation():
     re_spawn()
 
 def draw():
-    game.display.fill((120,180,255))
+    game.display.fill(bg_color)
+    map.bg_objects.draw(game.display)
     map.blocks.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
@@ -356,6 +359,7 @@ while True:#Game loop
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
     map.blocks.update(-scroll[0],-scroll[1])
+    map.bg_objects.update(-scroll[0],-scroll[1])
     map.enemies.update(-scroll[0],0, True)
 
     check_death(mario,map.enemies)
