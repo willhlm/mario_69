@@ -155,7 +155,6 @@ def check_death(player,enemies):
     death = False
     if (player.hitbox.bottom > 192):
         death = True
-<<<<<<< HEAD
         return death
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
@@ -165,22 +164,6 @@ def check_death(player,enemies):
             return death
     return death
 
-=======
-        mario.life-=1
-        re_spawn()
-    return death
-
-def death_animation(player):
-    vertical_momentum= -5
-    while True:
-
-        #game.display.fill((120,180,255))
-        move_player(player, map.blocks,map.enemies)
-        mario_bros.draw(game.display)
-
-        if(player.rect.bottom > 300):
-            break
->>>>>>> 7fac7769b4af04552e092b07515f36e05eef8548
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
