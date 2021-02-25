@@ -149,6 +149,12 @@ class items():#shrooms
     pass
 
 def re_spawn():#restart the whole level
+    global vertical_momentum
+    global horizontal_momentum
+
+    vert_momentum = 0
+    horizontal_momentum = 0
+    
     mario.rect.topleft=[255,82]
     mario.hitbox=mario.rect
     mario.dead=False
