@@ -15,6 +15,8 @@ def load_level(path):
     blocks = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     bg_objects = pygame.sprite.Group()
+    goals = pygame.sprite.Group()
+
 
     x = 0
     for column in game_map:
@@ -42,7 +44,24 @@ def load_level(path):
                 new_bg_obj = entities.BG_object(1,x*16,y*16)
                 bg_objects.add(new_bg_obj)
 
+            #next 5 are for the castle
+            elif(tile=='c'):
+                new_bg_obj = entities.BG_object(2,x*16,y*16)
+                bg_objects.add(new_bg_obj)
+            elif(tile=='d'):
+                new_bg_obj = entities.BG_object(3,x*16,y*16)
+                bg_objects.add(new_bg_obj)
+            elif(tile=='e'):
+                new_bg_obj = entities.BG_object(4,x*16,y*16)
+                bg_objects.add(new_bg_obj)
+            elif(tile=='f'):
+                new_bg_obj = entities.BG_object(5,x*16,y*16)
+                bg_objects.add(new_bg_obj)
+            elif(tile=='g'):
+                new_goal = entities.Goal(x*16,y*16)
+                goals.add(new_goal)
+
             y += 1
         x+= 1
 
-    return blocks, enemies, bg_objects
+    return blocks, enemies, bg_objects, goals
