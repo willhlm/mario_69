@@ -154,12 +154,14 @@ def re_spawn():#restart the whole level
 def check_death(player,enemies):
     if (mario.hitbox.bottom > 192):
         mario.dead = True
-        return True
+        mario.life-=1
+        death_animation()
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
     if enemy:
         if ((player.rect.right - enemy.rect.left > 0) or (player.rect.left - enemy.rect.right < 0)):
             mario.dead = True
-            return True
+            mario.life-=1
+            death_animation()
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
@@ -287,36 +289,38 @@ def enemy_AI(enemies,blocks):
         #print(i.vel[0])
 
 def death_animation():
-    global dead_ani
-    global temp
     global moving_right
     global moving_left
 
-    if not mario.dead:
-        temp=check_death(mario,map.enemies)
-    if temp:#enter once
-        dead_ani = -10
-        moving_right = False
-        moving_left = False
-        mario.life-=1
-    if(mario.dead and mario.rect.bottom > 230):
-        re_spawn()
-    elif(mario.dead):
+    dead_ani = -5
+    moving_right = False
+    moving_left = False
+
+    while mario.rect.bottom<230:
+        draw()
         mario_bros.update([0,dead_ani])
         dead_ani += 0.2
-        temp=False
-    return temp
+
+        pygame.time.wait(10)
+
+    re_spawn()
+
+def draw():
+    game.display.fill((120,180,255))
+    map.blocks.draw(game.display)
+    mario_bros.draw(game.display)
+    map.enemies.draw(game.display)
+    game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
+    pygame.display.update()
 
 while True:#Game loop
-    game.display.fill((120,180,255))
 
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
     map.blocks.update(-scroll[0],-scroll[1])
-    map.blocks.draw(game.display)
     map.enemies.update(-scroll[0],0, True)
 
-    death_animation()
+    check_death(mario,map.enemies)
 
     if mario.life<=0:
         game.gameover=True
@@ -349,9 +353,5 @@ while True:#Game loop
 
     move_player(mario,map.blocks,map.enemies)
 
-    mario_bros.draw(game.display)
-    map.enemies.draw(game.display)
-
-    game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
-    pygame.display.update()
+    draw()
     clock.tick(60)
