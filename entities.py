@@ -29,6 +29,7 @@ class Player(pygame.sprite.Sprite):#mario
             5: pygame.image.load("sprites/run_left1.gif"),
             6: pygame.image.load("sprites/run_left2.gif"),
             7: pygame.image.load("sprites/run_left3.gif"),
+            8: pygame.image.load("sprites/dead.png")
             }
 
     def __init__(self,x_pos,y_pos):

@@ -316,6 +316,7 @@ def death_animation():
     dead_ani = -5
     moving_right = False
     moving_left = False
+    mario.set_img(8)
 
     while mario.rect.bottom<230:
         draw()
