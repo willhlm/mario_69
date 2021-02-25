@@ -121,7 +121,7 @@ class Gumba(Enemy):
         self.dead_time=0
 
     def set_img(self,img):
-        self.image=self.images[img]
+        self.image = self.images[img]
 
 class Turtle(Enemy):
     images={1:pygame.image.load("sprites/turtle_1.gif"),

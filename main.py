@@ -295,8 +295,9 @@ def enemy_animation(enemies):
         elif i.alive==False:
             i.set_img(3)
             i.dead_time+=1
+            i.hitbox=[0,0]
             i.vel=0
-            if i.dead_time>10:
+            if i.dead_time>20:
                 i.kill()
 
     for i in turtle_list:
@@ -379,7 +380,5 @@ while True:#Game loop
     move_player(mario,map.blocks,map.enemies)
     enemy_animation(map.enemies)
 
-    print('Just for william')
-
     draw()
-    clock.tick(120)
+    clock.tick(80)
