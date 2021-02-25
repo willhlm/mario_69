@@ -6,6 +6,7 @@ air_timer = 0
 run_timer = 0
 moving_right = False
 moving_left = False
+sprint = False
 jump_trigger = False
 on_ground = False
 horizontal_momentum = 0
@@ -175,25 +176,34 @@ def move_player(mario, blocks,enemies):
     global horizontal_momentum
     global air_timer
     global run_timer
+    global sprint
     run_timer += 0.05
+
+    speed_cap = 2
+    if sprint:
+        speed_cap = 4
 
     x,y=0,0
     if(moving_right):
         if(horizontal_momentum < 0.7):
             horizontal_momentum += 0.1
         else:
-            horizontal_momentum += 0.2
-        if(horizontal_momentum > 2):
-            horizontal_momentum = 2
-        mario.set_img((int)(2 + horizontal_momentum * run_timer % 3))
+            horizontal_momentum += 0.1
+        if (horizontal_momentum > speed_cap + 0.3):
+            horizontal_momentum -= 0.2
+        elif (horizontal_momentum > speed_cap):
+            horizontal_momentum = speed_cap
+        mario.set_img((int)(2 + abs(horizontal_momentum) * run_timer % 3))
     if(moving_left):
         if(horizontal_momentum > -0.7):
             horizontal_momentum -= 0.1
         else:
-            horizontal_momentum -= 0.2
-        if(horizontal_momentum < -2):
-            horizontal_momentum = -2
-        mario.set_img((int)(5 + horizontal_momentum * run_timer % 3))
+            horizontal_momentum -= 0.1
+        if (horizontal_momentum < -1*speed_cap - 0.3):
+            horizontal_momentum += 0.2
+        elif (horizontal_momentum < -1*speed_cap):
+            horizontal_momentum = -1*speed_cap
+        mario.set_img((int)(5 + abs(horizontal_momentum) * run_timer % 3))
     if not moving_left and not moving_right:
         if horizontal_momentum < -1:
             horizontal_momentum += 0.1
@@ -361,9 +371,11 @@ while True:#Game loop
                 if air_timer < 10:
                     vertical_momentum = -5
             if event.key == K_RIGHT and not mario.dead:
-                    moving_right = True
+                moving_right = True
             if event.key == K_LEFT and not mario.dead:
-                    moving_left = True
+                moving_left = True
+            if event.key == K_LSHIFT:
+                sprint = True
             if event.key==pygame.K_ESCAPE:
                 game.ESC=True
 
@@ -372,6 +384,8 @@ while True:#Game loop
                 moving_right = False
             if event.key == K_LEFT:
                 moving_left = False
+            if event.key == K_LSHIFT:
+                sprint = False
 
 
     game.start_menu(False)
