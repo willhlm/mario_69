@@ -22,7 +22,11 @@ class Block(pygame.sprite.Sprite):
 class BG_object(pygame.sprite.Sprite):
 
     images = {0: pygame.image.load("sprites/hill.gif"),
-              1: pygame.image.load("sprites/cloud1.gif")
+              1: pygame.image.load("sprites/cloud1.gif"),
+              2: pygame.image.load("sprites/castle_brick.gif"),
+              3: pygame.image.load("sprites/castle_top.gif"),
+              4: pygame.image.load("sprites/castle_top2.gif"),
+              5: pygame.image.load("sprites/castle_window.gif")
               }
 
     def __init__(self,img,x_pos,y_pos):
@@ -33,6 +37,20 @@ class BG_object(pygame.sprite.Sprite):
 
     def update(self,x_pos,y_pos):
         self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
+
+class Goal(pygame.sprite.Sprite):
+
+    def __init__(self,x_pos,y_pos):
+        super().__init__()
+        self.image = pygame.image.load("sprites/castle_door.gif")
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x_pos,y_pos]
+        self.hitbox = self.rect
+
+    def update(self,x_pos,y_pos):
+        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
+        self.hitbox = self.rect
+
 
 class Player(pygame.sprite.Sprite):#mario
 

@@ -139,9 +139,11 @@ class level():#level
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
+        self.goals = pygame.sprite.Group()
+        self.clear = False
 
     def select_level(self,level):
-        self.blocks, self.enemies, self.bg_objects = tools.load_level("levels/"+self.level+str(level))
+        self.blocks, self.enemies, self.bg_objects, self.goals = tools.load_level("levels/"+self.level+str(level))
 
 class items():#shrooms
     pass
@@ -153,6 +155,13 @@ def re_spawn():#restart the whole level
     #mario.update([255,82])
     map.blocks=[]
     map.select_level(world.level)
+
+def check_goal(player,goals):
+    goal = pygame.sprite.spritecollideany(player,goals,collided)
+    if goal:
+        if abs(player.rect.right - goal.rect.right) < 5:
+            map.clear = True
+
 
 def check_death(player,enemies):
     if (mario.hitbox.bottom > 192):
@@ -349,6 +358,7 @@ def draw():
     game.display.fill(bg_color)
     map.bg_objects.draw(game.display)
     map.blocks.draw(game.display)
+    map.goals.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
@@ -360,9 +370,16 @@ while True:#Game loop
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
     map.blocks.update(-scroll[0],-scroll[1])
     map.bg_objects.update(-scroll[0],-scroll[1])
+    map.goals.update(-scroll[0],-scroll[1])
     map.enemies.update(-scroll[0],0, True)
 
-    check_death(mario,map.enemies)
+    check_death(mario, map.enemies)
+    check_goal(mario, map.goals)
+
+    if map.clear:
+        map.clear = False
+        game.gameover=True
+        game.game_over_screen()
 
     if mario.life<=0:
         game.gameover=True
