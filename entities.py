@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):#mario
         self.dir = 0 # 0 = right, 1 = left
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
-        self.hitbox = self.rect
+        self.hitbox = self.rect.copy()
         self.life=3
         self.dead=False
 
@@ -107,7 +107,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.topleft = [x_pos,y_pos]
         self.dir = -1 # -1 left, 1 right
         self.vert_momentum = 0
-        self.hitbox = self.rect
+        self.hitbox = self.rect.copy()
         self.enemy_type=img
         self.alive = True
 
