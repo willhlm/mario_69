@@ -185,12 +185,10 @@ class level():#level
         self.bg_objects = pygame.sprite.Group()
         self.goals = pygame.sprite.Group()
         self.clear = False
+        self.items=pygame.sprite.Group()
 
     def select_level(self,level):
-        self.blocks, self.enemies, self.bg_objects, self.goals = tools.load_level("levels/"+self.level+str(level))
-
-class items():#shrooms
-    pass
+        self.blocks, self.enemies, self.bg_objects, self.goals ,self.items= tools.load_level("levels/"+self.level+str(level))
 
 def re_spawn():#restart the whole level
     global vertical_momentum
@@ -227,13 +225,20 @@ def check_death(player,enemies):
         mario.dead = True
         mario.life-=1
         death_animation()
+        mario.small=True
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
-    if enemy:
+    if enemy and player.small and player.hit_timer>30:
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.dead = True
             mario.life-=1
+            player.hit_timer=0
             death_animation()
+    if enemy and not player.small:
+        if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
+            mario.small=True
+            player.hit_timer=0
+            start_timer()
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
@@ -242,8 +247,10 @@ def collided(sprite, other):
     else:
         return sprite.hitbox.colliderect(other.hitbox)
     #return sprite.hitbox.bottom == other.hitbox.top or sprite.hitbox.colliderect(other.hitbox)
+def start_timer():
+    mario.hit_timer+=1
 
-def move_player(mario, blocks,enemies):
+def move_player(mario, blocks,enemies,items):
 
     global vertical_momentum
     global horizontal_momentum
@@ -334,9 +341,17 @@ def move_player(mario, blocks,enemies):
                 col_enemy.alive=False
                 vertical_momentum=-2#mario
 
-
     #collision between groups
     enemies.update(0,0.2,False)
+    items.update(0,0.2,False)
+
+    for item in items:
+        col_block = pygame.sprite.spritecollideany(item,blocks,collided)
+        if col_block:
+            item.rect.bottom = col_block.hitbox.top
+            item.vert_momentum = 0
+
+
     for enemy in enemies:
         col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
         if col_block:
@@ -345,6 +360,26 @@ def move_player(mario, blocks,enemies):
 
 
     enemies.update(0,0,False)
+    items.update(0,0,False)
+    for item in items:
+        col_block = pygame.sprite.spritecollideany(item,blocks,collided)
+        if col_block:
+            if item.dir > 0:
+                item.rect.right = col_block.hitbox.left - 2
+            elif item.dir < 0:
+                item.rect.left = col_block.hitbox.right + 2
+            item.dir *= -1
+
+    for item in items:
+        col_block = pygame.sprite.spritecollideany(item,enemies,collided)
+        if col_block:
+            if item.dir > 0:
+                item.rect.right = col_block.hitbox.left - 2
+            elif item.dir < 0:
+                item.rect.left = col_block.hitbox.right + 2
+            item.dir *= -1
+            col_block.dir *= -1
+
     for enemy in enemies:
         col_block = pygame.sprite.spritecollideany(enemy,blocks,collided)
         if col_block:
@@ -363,6 +398,13 @@ def move_player(mario, blocks,enemies):
                 enemy.rect.left = col_block.hitbox.right + 2
             enemy.dir *= -1
             col_block.dir *= -1
+
+    item = pygame.sprite.spritecollideany(mario,items,collided)
+    if item and item.id==1:
+        if ((mario.rect.right - item.rect.left > 0) and item.alive==True or (mario.rect.left - item.rect.right < 0) and item.alive==True):
+            mario.small = False#become large
+            item.kill()
+
 
 
     air_timer += 1
@@ -460,6 +502,7 @@ def goal_animation():
         map.blocks.draw(game.display)
         map.goals.draw(game.display)
         map.enemies.draw(game.display)
+        map.items.draw(game.display)
         game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
         game.screen.blit(flag_surface,flag_rect)
         pygame.display.update()
@@ -472,6 +515,7 @@ def draw():
     map.goals.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
+    map.items.draw(game.display)
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
 
@@ -483,6 +527,7 @@ while True:#Game loop
     map.bg_objects.update(-scroll[0],-scroll[1])
     map.goals.update(-scroll[0],-scroll[1])
     map.enemies.update(-scroll[0],0, True)
+    map.items.update(-scroll[0],-scroll[1],True)
 
     check_death(mario, map.enemies)
     check_goal(mario, map.goals)
@@ -529,8 +574,10 @@ while True:#Game loop
     game.start_menu(False)
     world.world_select()
 
-    move_player(mario,map.blocks,map.enemies)
+    move_player(mario,map.blocks,map.enemies,map.items)
     enemy_animation(map.enemies)
+    if mario.hit_timer!=0:
+        start_timer()
 
     draw()
     clock.tick(60)
