@@ -109,6 +109,7 @@ class Enemy(pygame.sprite.Sprite):
         self.vert_momentum = 0
         self.hitbox = self.rect
         self.enemy_type=img
+        self.alive = True
 
     def update(self,x_pos,y_pos,scroll):
         if (scroll):
@@ -150,7 +151,6 @@ class Gumba(Enemy):
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
-        self.alive=True
         self.dead_time=0
 
     def set_img(self,img):
@@ -165,7 +165,6 @@ class Turtle(Enemy):
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
-        self.alive=True
         self.dead_time=0
 
     def set_img(self,img):
