@@ -411,10 +411,12 @@ def move_player(mario, blocks,enemies,items):
     air_timer += 1
 
 def update_hitbox():
-    if mario.small:
-        pass#insert small mario hitbox
-    else:
-        pass#insert large mario hitbox
+    if mario.small:#insert small mario hitbox
+        mario.image = mario.images[0]
+        mario.rect = mario.image.get_rect(center=mario.rect.center)
+    else:#insert large mario hitbox
+        mario.image = mario.IMAGES[0]
+        mario.rect = mario.image.get_rect(center=mario.rect.center)
 
 pygame.init()
 clock = pygame.time.Clock()
