@@ -152,6 +152,7 @@ class Gumba(Enemy):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
         self.dead_time=0
+        self.alive = True
 
     def set_img(self,img):
         self.image = self.images[img]
@@ -170,6 +171,7 @@ class Turtle(Enemy):
         self.frame=1
         self.dead_time=0
         self.jump=jump
+        self.aliv=True
 
     def set_img(self,img):
         if self.jump:
