@@ -25,6 +25,7 @@ class GUI():
 
     BG_surface=pygame.transform.scale(pygame.image.load('sprites/start_meny_2.jpg'),(1000,600))
     BG_cloud=pygame.image.load('sprites/cloud1.gif')
+    dead=pygame.transform.scale(pygame.image.load('sprites/dead.png'),(100,100))
 
     def __init__(self,ESC,click=False):
         self.ESC=ESC
@@ -90,14 +91,14 @@ class GUI():
             pygame.display.update()
 
     def game_over_screen(self):
+        game.screen.fill((0,0,0))
+        go_surface=game_font.render("Game Over",True,(255,255,255))#antialias flag
+        go_rect=go_surface.get_rect(center=(450,250))#position
+        #pygame.draw.rect(game.screen,(0,0,0),go_rect)
+        game.screen.blit(go_surface,go_rect)
+        game.screen.blit(self.dead,(400,300))
 
-        # this shit is crashing the program
         while self.gameover:
-            game.screen.fill((0,0,0))
-            go_surface=game_font.render("Game Over",True,(255,255,255))#antialias flag
-            go_rect=go_surface.get_rect(center=(200,100))#position
-            pygame.draw.rect(game.screen,(0,0,0),go_rect)
-            game.screen.blit(go_surface,go_rect)
             pygame.display.update()
             clock.tick(60)
 
