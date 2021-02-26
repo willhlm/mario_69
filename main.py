@@ -55,7 +55,6 @@ class GUI():
 
             start_surface=game_font.render(text,True,(255,255,255))#antialias flag
             start_rect=start_surface.get_rect(center=(200,100))#position
-
             exit_surface=game_font.render('Exit game',True,(255,255,255))#antialias flag
             exit_rect=start_surface.get_rect(center=(200,400))#position
 
@@ -88,6 +87,7 @@ class GUI():
 
             game.screen.blit(start_surface,start_rect)
             game.screen.blit(exit_surface,exit_rect)
+
             pygame.display.update()
 
     def game_over_screen(self):
@@ -220,6 +220,7 @@ def check_goal(player,goals):
             moving_left = False
             moving_right = False
             map.clear = True
+            goal_animation()
 
 def check_death(player,enemies):
     if (mario.hitbox.bottom > 192):
@@ -426,6 +427,31 @@ def death_animation():
         pygame.time.wait(10)
 
     re_spawn()
+
+def goal_animation():
+    flag_surface=pygame.image.load('sprites/castleflag_complete.png')
+    i=0
+
+    mario.set_img(0)
+    pygame.display.update()
+    pygame.time.wait(300)
+
+    #remove mario
+    while i<20:
+        flag_rect=flag_surface.get_rect(center=(320,200-i))#position
+        i+=1
+        pygame.time.wait(50)
+
+        #draw except mario
+        game.display.fill(bg_color)
+        map.bg_objects.draw(game.display)
+        map.blocks.draw(game.display)
+        map.goals.draw(game.display)
+        map.enemies.draw(game.display)
+        game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
+        game.screen.blit(flag_surface,flag_rect)
+        pygame.display.update()
+    pygame.time.wait(500)
 
 def draw():
     game.display.fill(bg_color)
