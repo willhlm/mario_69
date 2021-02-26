@@ -329,6 +329,7 @@ def move_player(mario, blocks,enemies):
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
             if col_enemy.jump:
                 col_enemy.jump=False
+                vertical_momentum=-2#mario
             else:
                 col_enemy.alive=False
                 vertical_momentum=-2#mario
