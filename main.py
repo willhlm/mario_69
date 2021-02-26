@@ -65,6 +65,7 @@ class GUI():
             pygame.display.update()
 
     def game_over_screen(self):
+
         # this shit is crashing the program
         while self.gameover:
             game.screen.fill((0,0,0))
@@ -149,6 +150,12 @@ class items():#shrooms
     pass
 
 def re_spawn():#restart the whole level
+    global vertical_momentum
+    global horizontal_momentum
+
+    vert_momentum = 0
+    horizontal_momentum = 0
+
     mario.rect.topleft=[255,82]
     mario.hitbox=mario.rect
     mario.dead=False
@@ -157,9 +164,18 @@ def re_spawn():#restart the whole level
     map.select_level(world.level)
 
 def check_goal(player,goals):
+    global vertical_momentum
+    global horizontal_momentum
+    global moving_left
+    global moving_right
+
     goal = pygame.sprite.spritecollideany(player,goals,collided)
     if goal:
         if abs(player.rect.right - goal.rect.right) < 5:
+            vertical_momentum = 0
+            horizontal_momentum = 0
+            moving_left = False
+            moving_right = False
             map.clear = True
 
 
@@ -178,7 +194,10 @@ def check_death(player,enemies):
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
-    return sprite.hitbox.colliderect(other.hitbox)
+    if (sprite == other):
+        return False
+    else:
+        return sprite.hitbox.colliderect(other.hitbox)
     #return sprite.hitbox.bottom == other.hitbox.top or sprite.hitbox.colliderect(other.hitbox)
 
 def move_player(mario, blocks,enemies):
@@ -287,6 +306,17 @@ def move_player(mario, blocks,enemies):
                 enemy.rect.left = col_block.hitbox.right + 2
             enemy.dir *= -1
 
+    for enemy in enemies:
+        col_block = pygame.sprite.spritecollideany(enemy,enemies,collided)
+        if col_block:
+            if enemy.dir > 0:
+                enemy.rect.right = col_block.hitbox.left - 2
+            elif enemy.dir < 0:
+                enemy.rect.left = col_block.hitbox.right + 2
+            enemy.dir *= -1
+            col_block.dir *= -1
+
+
     air_timer += 1
 
 pygame.init()
@@ -320,6 +350,7 @@ def enemy_animation(enemies):
             i.dead_time+=1
             i.hitbox=[0,0]
             i.vel=0
+            i.rect.bottom += 3
             if i.dead_time>20:
                 i.kill()
 
@@ -421,4 +452,4 @@ while True:#Game loop
     enemy_animation(map.enemies)
 
     draw()
-    clock.tick(80)
+    clock.tick(60)
