@@ -109,7 +109,7 @@ class Enemy(pygame.sprite.Sprite):
         self.vert_momentum = 0
         self.hitbox = self.rect.copy()
         self.enemy_type=img
-        self.alive = True
+        self.jump=False
 
     def update(self,x_pos,y_pos,scroll):
         if (scroll):
@@ -157,18 +157,31 @@ class Gumba(Enemy):
         self.image = self.images[img]
 
 class Turtle(Enemy):
+    vert=-3
     images={1:pygame.image.load("sprites/turtle_1.gif"),
             2:pygame.image.load("sprites/turtle_2.gif"),
             3:pygame.image.load("sprites/turtle_3.gif"),
-            4:pygame.image.load("sprites/turtle_4.gif")}
+            4:pygame.image.load("sprites/turtle_4.gif"),
+            5:pygame.image.load("sprites/turtle_5.gif"),
+            6:pygame.image.load("sprites/turtle_6.gif")}
 
-    def __init__(self,img,x_pos,y_pos):
+    def __init__(self,img,x_pos,y_pos,jump):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
         self.dead_time=0
+        self.jump=jump
 
     def set_img(self,img):
-        if self.dir>0:
-            self.image=self.images[img]
+        if self.jump:
+            if self.dir>0:
+                self.image=self.images[5]
+            else:
+                self.image=self.images[6]
         else:
-            self.image=self.images[img+2]
+            if self.dir>0:
+                self.image=self.images[img]
+            else:
+                self.image=self.images[img+2]
+    def hop(self):
+        self.rect.topleft = [self.rect.topleft[0], self.rect.topleft[1] + Turtle.vert]
+        self.hitbox = self.rect
