@@ -94,7 +94,7 @@ class Player(pygame.sprite.Sprite):#mario
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
         self.hitbox = self.rect
-
+            
     def set_img(self,val):
         # 0 = stand right
         # 1 = stand left

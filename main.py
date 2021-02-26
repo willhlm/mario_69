@@ -239,6 +239,7 @@ def check_death(player,enemies):
             mario.small=True
             player.hit_timer=0
             start_timer()
+            update_hitbox()
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
@@ -405,9 +406,15 @@ def move_player(mario, blocks,enemies,items):
             mario.small = False#become large
             item.kill()
 
-
+            update_hitbox()
 
     air_timer += 1
+
+def update_hitbox():
+    if mario.small:
+        pass#insert small mario hitbox
+    else:
+        pass#insert large mario hitbox
 
 pygame.init()
 clock = pygame.time.Clock()
