@@ -51,7 +51,6 @@ class Goal(pygame.sprite.Sprite):
         self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
         self.hitbox = self.rect
 
-
 class Player(pygame.sprite.Sprite):#mario
 
     images = {0: pygame.image.load("sprites/stand_right.gif"),
@@ -67,6 +66,19 @@ class Player(pygame.sprite.Sprite):#mario
             10: pygame.image.load("sprites/jump_left.png"),
             }
 
+    IMAGES = {0: pygame.image.load("sprites/stand_right_big.png"),
+            1: pygame.image.load("sprites/stand_left_big.png"),
+            2: pygame.image.load("sprites/run_right1_big.png"),
+            3: pygame.image.load("sprites/run_right2_big.png"),
+            4: pygame.image.load("sprites/run_right3_big.png"),
+            5: pygame.image.load("sprites/run_left1_big.png"),
+            6: pygame.image.load("sprites/run_left2_big.png"),
+            7: pygame.image.load("sprites/run_left3_big.png"),
+            8: pygame.image.load("sprites/dead.png"),
+            9: pygame.image.load("sprites/jump_right_big.png"),
+            10: pygame.image.load("sprites/jump_left_big.png"),
+            }
+
     def __init__(self,x_pos,y_pos):
         super().__init__()
         self.image = self.images[0]
@@ -76,6 +88,8 @@ class Player(pygame.sprite.Sprite):#mario
         self.hitbox = self.rect.copy()
         self.life=3
         self.dead=False
+        self.small=True
+        self.hit_timer=30
 
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
@@ -86,16 +100,28 @@ class Player(pygame.sprite.Sprite):#mario
         # 1 = stand left
         # 2 - 4 = running right
         # 5 - 7 = running left
-        if(val in range(2,4)):
-            self.dir = 0
-        elif(val in range(5,7)):
-            self.dir = 1
-        if(val == 0):
-            self.image = self.images[self.dir]
-        elif(val == 1):
-            self.image = self.images[self.dir + 9]
+        if self.small:
+            if(val in range(2,4)):
+                self.dir = 0
+            elif(val in range(5,7)):
+                self.dir = 1
+            if(val == 0):
+                self.image = self.images[self.dir]
+            elif(val == 1):
+                self.image = self.images[self.dir + 9]
+            else:
+                self.image = self.images[val]
         else:
-            self.image = self.images[val]
+            if(val in range(2,4)):
+                self.dir = 0
+            elif(val in range(5,7)):
+                self.dir = 1
+            if(val == 0):
+                self.image = self.IMAGES[self.dir]
+            elif(val == 1):
+                self.image = self.IMAGES[self.dir + 9]
+            else:
+                self.image = self.IMAGES[val]
 
 class Enemy(pygame.sprite.Sprite):
     vel = 1
@@ -187,3 +213,13 @@ class Turtle(Enemy):
     def hop(self):
         self.rect.topleft = [self.rect.topleft[0], self.rect.topleft[1] + Turtle.vert]
         self.hitbox = self.rect
+
+class items(Enemy):#shrooms
+    images = {1 : pygame.image.load("sprites/item_redmushroom.png"),
+            2 : pygame.image.load("sprites/item_greenmushroom.png"),}
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__(img,x_pos,y_pos)
+        self.id=img
+        self.alive=True
+        self.image = self.images[img]
