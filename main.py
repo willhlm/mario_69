@@ -226,6 +226,7 @@ def check_death(player,enemies):
         mario.life-=1
         death_animation()
         mario.small=True
+        update_hitbox()
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
     if enemy and player.small and player.hit_timer>30:
@@ -234,6 +235,7 @@ def check_death(player,enemies):
             mario.life-=1
             player.hit_timer=0
             death_animation()
+
     if enemy and not player.small:
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.small=True
@@ -405,7 +407,7 @@ def move_player(mario, blocks,enemies,items):
         if ((mario.rect.right - item.rect.left > 0) and item.alive==True or (mario.rect.left - item.rect.right < 0) and item.alive==True):
             mario.small = False#become large
             item.kill()
-
+            grow_animation()
             update_hitbox()
 
     air_timer += 1
@@ -413,10 +415,28 @@ def move_player(mario, blocks,enemies,items):
 def update_hitbox():
     if mario.small:#insert small mario hitbox
         mario.image = mario.images[0]
-        mario.rect = mario.image.get_rect(center=mario.rect.center)
+        mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
     else:#insert large mario hitbox
         mario.image = mario.IMAGES[0]
-        mario.rect = mario.image.get_rect(center=mario.rect.center)
+        mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
+
+
+def grow_animation():
+    j=0
+    Frame=[True,False]
+    global horizontal_momentum
+    global vertical_momentum
+    vertical_momentum=0
+    horizontal_momentum=0
+    for i in range(6):
+        if j>1:
+            j=0
+        mario.set_img(j)
+        pygame.time.wait(150)
+        mario.small=Frame[j]
+        draw()
+        j+=1
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -529,7 +549,6 @@ def draw():
     pygame.display.update()
 
 while True:#Game loop
-
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
     #scroll[1] += mario.rect.center[1] - scroll[1] - 100
     map.blocks.update(-scroll[0],-scroll[1])
