@@ -22,6 +22,10 @@ enemies = pygame.sprite.Group()
 #def check_block_col(player,block)
 
 class GUI():
+
+    BG_surface=pygame.transform.scale(pygame.image.load('sprites/start_meny_2.jpg'),(1000,600))
+    BG_cloud=pygame.image.load('sprites/cloud1.gif')
+
     def __init__(self,ESC,click=False):
         self.ESC=ESC
         self.click=click
@@ -35,9 +39,14 @@ class GUI():
         self.display = pygame.Surface((self.display_width,self.display_height)) # used as the surface for rendering, which is scaled
 
     def start_menu(self,first=True):#escape botton
+        x=[]#placeholder
+        y=[]
+        for i in range(0,20):
+            y.append(random.randint(0,400))
+            x.append(random.randint(0,900))
+
         while self.ESC or first:
 
-            game.screen.fill((0,0,0))
             if first:#on boot
                 text='Start Game'
             else:#on esc button
@@ -46,12 +55,19 @@ class GUI():
             start_surface=game_font.render(text,True,(255,255,255))#antialias flag
             start_rect=start_surface.get_rect(center=(200,100))#position
 
-            pygame.draw.rect(game.screen,(255,0,0),start_rect)
+            exit_surface=game_font.render('Exit game',True,(255,255,255))#antialias flag
+            exit_rect=start_surface.get_rect(center=(200,400))#position
+
+            pygame.draw.rect(game.screen,(255,255,255),start_rect,width=2)
+            pygame.draw.rect(game.screen,(255,255,255),exit_rect,width=2)
 
             if start_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
                 self.ESC=False
                 self.click=False
                 first=False
+            elif exit_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
+                pygame.quit()
+                sys.exit()
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -61,7 +77,16 @@ class GUI():
                     self.click=True
                 if event.type==pygame.MOUSEBUTTONUP:
                     self.click=False
+
+            game.screen.blit(self.BG_surface,(0,0))
+            for i in range(0,20):
+                x[i]+=0.5
+                if x[i]>900:
+                    x[i]=0
+                game.screen.blit(self.BG_cloud,(x[i],y[i]))
+
             game.screen.blit(start_surface,start_rect)
+            game.screen.blit(exit_surface,exit_rect)
             pygame.display.update()
 
     def game_over_screen(self):
@@ -92,6 +117,7 @@ class GUI():
                         world.world_select()
 
 class overworld():#level selection stuff
+
     def __init__(self,active,click=False):
         #super().__init__(ESC,click=False)
         self.active=active
@@ -99,25 +125,41 @@ class overworld():#level selection stuff
 
     @staticmethod
     def draw_map(int):
-        level_surface=game_font.render('level'+str(int),True,(255,255,255))#antialias flag
-        level_rect=level_surface.get_rect(center=(200,100*int))#position
+        level_surface=pygame.image.load('sprites/overworld_castle_'+str(int+1)+'.png')
+        level_rect=level_surface.get_rect(center=(200+int*400,440-int*50))#position
         return level_surface,level_rect
 
+
     def world_select(self):
+        x=[]#placeholder
+        y=[]
+        for i in range(0,20):
+            y.append(random.randint(0,400))
+            x.append(random.randint(0,900))
+
         while self.active:
+            game.screen.blit(GUI.BG_surface,(0,0))
 
-            game.screen.fill((0,0,0))
-
-            for i in range(1,3):
+            for i in range(0,20):
+                x[i]+=1
+                if x[i]>900:
+                    x[i]=0
+                game.screen.blit(GUI.BG_cloud,(x[i],y[i]))
+            for i in range(0,2):
                 level_surface,level_rect=overworld.draw_map(i)
-                pygame.draw.rect(game.screen,(255,0,0),level_rect)
+
+                text_surface=game_font.render('Level '+str(i+1),True,(255,255,255))#antialias flag
+                text_rect=text_surface.get_rect(center=(200+i*400,500))#position
+
                 game.screen.blit(level_surface,level_rect)
+                game.screen.blit(text_surface,text_rect)
 
                 if level_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
                     self.active=False
                     self.click=False
-                    map.select_level(i)
-                    self.level=i
+                    map.select_level(i+1)
+                    self.level=i+1
+
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -177,7 +219,6 @@ def check_goal(player,goals):
             moving_left = False
             moving_right = False
             map.clear = True
-
 
 def check_death(player,enemies):
     if (mario.hitbox.bottom > 192):
@@ -409,8 +450,9 @@ while True:#Game loop
 
     if map.clear:
         map.clear = False
-        game.gameover=True
-        game.game_over_screen()
+        world.active=True
+        #game.gameover=True
+        world.world_select()
 
     if mario.life<=0:
         game.gameover=True
