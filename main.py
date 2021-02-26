@@ -82,8 +82,8 @@ class GUI():
             game.screen.blit(self.BG_surface,(0,0))
             for i in range(0,20):
                 x[i]+=0.5
-                if x[i]>900:
-                    x[i]=0
+                if x[i]>1000:
+                    x[i]=-50
                 game.screen.blit(self.BG_cloud,(x[i],y[i]))
 
             game.screen.blit(start_surface,start_rect)
@@ -143,8 +143,8 @@ class overworld():#level selection stuff
 
             for i in range(0,20):
                 x[i]+=1
-                if x[i]>900:
-                    x[i]=0
+                if x[i]>1000:
+                    x[i]=-50
                 game.screen.blit(GUI.BG_cloud,(x[i],y[i]))
             for i in range(0,2):
                 level_surface,level_rect=overworld.draw_map(i)
