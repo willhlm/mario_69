@@ -327,8 +327,12 @@ def move_player(mario, blocks,enemies):
     col_enemy = pygame.sprite.spritecollideany(mario,enemies,collided=None)
     if (col_enemy and not mario.dead):#stomp
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
-            col_enemy.alive=False
-            vertical_momentum=-2
+            if col_enemy.jump:
+                col_enemy.jump=False
+            else:
+                col_enemy.alive=False
+                vertical_momentum=-2#mario
+
 
     #collision between groups
     enemies.update(0,0.2,False)
@@ -398,6 +402,13 @@ def enemy_animation(enemies):
                 i.kill()
 
     for i in turtle_list:
+
+        if i.jump:#jumping
+            i.vert+=1
+            i.hop()
+            if i.vert>3:
+                i.vert=-3
+
         if i.alive:
             if i.frame>=20:
                 i.frame=0

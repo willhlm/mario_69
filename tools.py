@@ -35,7 +35,10 @@ def load_level(path):
                 gumba = entities.Gumba(1,x*16,y*16)
                 enemies.add(gumba)
             elif(tile=='5'):
-                turtle = entities.Turtle(2,x*16,y*16)
+                turtle = entities.Turtle(2,x*16,y*16,False)
+                enemies.add(turtle)
+            elif(tile=='6'):
+                turtle = entities.Turtle(2,x*16,y*16,True)
                 enemies.add(turtle)
             elif(tile=='a'):
                 new_bg_obj = entities.BG_object(0,x*16,y*16)
