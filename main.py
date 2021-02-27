@@ -614,6 +614,6 @@ while True:#Game loop
     enemy_animation(map.enemies)
     if mario.hit_timer!=0:
         start_timer()
-    print(mario.life)
+
     draw()
     clock.tick(60)
