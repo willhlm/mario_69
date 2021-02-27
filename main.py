@@ -260,6 +260,7 @@ def move_player(mario, blocks,enemies,items):
     global air_timer
     global run_timer
     global sprint
+
     run_timer += 0.05
 
     speed_cap = 2
@@ -328,6 +329,12 @@ def move_player(mario, blocks,enemies,items):
             vertical_momentum = 0
             if (col_block.breakable):
                 blocks.remove(col_block)
+            elif col_block.item:#make an item
+                pos=[col_block.rect.topleft[0], col_block.rect.topleft[1]]
+                items.add(entities.items(col_block.item,pos[0],pos[1]))#spawn position
+                col_block.item=False
+                col_block.image=col_block.images[3]
+
         elif y > 0:
             mario.rect.bottom = col_block.hitbox.top
             air_timer = 0
@@ -405,11 +412,12 @@ def move_player(mario, blocks,enemies,items):
     item = pygame.sprite.spritecollideany(mario,items,collided)
     if item and item.id==1:
         if ((mario.rect.right - item.rect.left > 0) and item.alive==True or (mario.rect.left - item.rect.right < 0) and item.alive==True):
-            mario.small = False#become large
-            item.kill()
-            grow_animation()
-            update_hitbox()
 
+            item.kill()
+            if mario.small:
+                grow_animation()
+            update_hitbox()
+            mario.small = False#become large
     air_timer += 1
 
 def update_hitbox():

@@ -5,15 +5,17 @@ class Block(pygame.sprite.Sprite):
     images = {1 : pygame.image.load("sprites/brick.gif"),
             2 : pygame.image.load("sprites/ground.gif"),
             3 : pygame.image.load("sprites/block.gif"),
+            4 : pygame.image.load("sprites/block_question.png"),
             }
 
-    def __init__(self,img,x_pos,y_pos,breakable):
+    def __init__(self,img,x_pos,y_pos,breakable,item):
         super().__init__()
         self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
         self.hitbox = self.rect.inflate(0,0)
         self.breakable = breakable
+        self.item=item
 
     def update(self,x_pos,y_pos):
         self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
@@ -94,7 +96,7 @@ class Player(pygame.sprite.Sprite):#mario
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
         self.hitbox = self.rect
-            
+
     def set_img(self,val):
         # 0 = stand right
         # 1 = stand left
