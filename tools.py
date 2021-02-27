@@ -23,13 +23,13 @@ def load_level(path):
         y = 0
         for tile in column:
             if(tile == '2'):
-                new_block = entities.Block(2,x*16,y*16,False,False)
+                new_block = entities.Block(2,x*16,y*16,False,0)
                 blocks.add(new_block)
             elif(tile == '1'):
-                new_block = entities.Block(1,x*16,y*16,True,False)
+                new_block = entities.Block(1,x*16,y*16,True,0)
                 blocks.add(new_block)
             elif(tile == '3'):
-                new_block = entities.Block(3,x*16,y*16,False,False)
+                new_block = entities.Block(3,x*16,y*16,False,0)
                 blocks.add(new_block)
             elif(tile=='4'):
                 gumba = entities.Gumba(1,x*16,y*16)
@@ -50,7 +50,10 @@ def load_level(path):
                 new_item = entities.items(1,x*16,y*16)
                 items.add(new_item)
             elif(tile=='8'):
-                new_block = entities.Block(4,x*16,y*16,False,True)
+                new_block = entities.Block(4,x*16,y*16,False,1)
+                blocks.add(new_block)
+            elif(tile=='9'):
+                new_block = entities.Block(4,x*16,y*16,False,2)
                 blocks.add(new_block)
 
             #next 5 are for the castle

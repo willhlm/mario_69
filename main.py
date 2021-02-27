@@ -329,9 +329,9 @@ def move_player(mario, blocks,enemies,items):
             vertical_momentum = 0
             if (col_block.breakable):
                 blocks.remove(col_block)
-            elif col_block.item:#make an item
+            elif col_block.item!=0:#make an item
                 pos=[col_block.rect.topleft[0], col_block.rect.topleft[1]]
-                items.add(entities.items(col_block.item,pos[0],pos[1]))#spawn position
+                items.add(entities.items(col_block.item,pos[0],pos[1]))#spawn the item
                 col_block.item=False
                 col_block.image=col_block.images[3]
 
@@ -410,14 +410,15 @@ def move_player(mario, blocks,enemies,items):
             col_block.dir *= -1
 
     item = pygame.sprite.spritecollideany(mario,items,collided)
-    if item and item.id==1:
+    if item:
         if ((mario.rect.right - item.rect.left > 0) and item.alive==True or (mario.rect.left - item.rect.right < 0) and item.alive==True):
 
             item.kill()
-            if mario.small:
+            if mario.small and item.id==1:
                 grow_animation()
-            update_hitbox()
-            mario.small = False#become large
+                update_hitbox()
+            elif item.id==2:
+                mario.life+=1
     air_timer += 1
 
 def update_hitbox():
@@ -427,7 +428,6 @@ def update_hitbox():
     else:#insert large mario hitbox
         mario.image = mario.IMAGES[0]
         mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
-
 
 def grow_animation():
     j=0
@@ -614,6 +614,6 @@ while True:#Game loop
     enemy_animation(map.enemies)
     if mario.hit_timer!=0:
         start_timer()
-
+    print(mario.life)
     draw()
     clock.tick(60)
