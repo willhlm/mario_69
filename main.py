@@ -19,8 +19,6 @@ mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 
-#def check_block_col(player,block)
-
 class GUI():
 
     BG_surface=pygame.transform.scale(pygame.image.load('sprites/start_meny_2.jpg'),(1000,600))
@@ -118,6 +116,7 @@ class GUI():
                         world.world_select()
 
 class overworld():#level selection stuff
+    castle_pos=800
 
     def __init__(self,active,click=False):
         #super().__init__(ESC,click=False)
@@ -126,8 +125,16 @@ class overworld():#level selection stuff
 
     @staticmethod
     def draw_map(int):
-        level_surface=pygame.image.load('sprites/overworld_castle_'+str(int+1)+'.png')
-        level_rect=level_surface.get_rect(center=(200+int*400,440-int*50))#position
+
+        if map.level>int+1:#complete castle
+            level_surface=pygame.transform.scale(pygame.image.load('sprites/overworld_complete'+'.png'),(200,200))
+            level_rect=level_surface.get_rect(midbottom=(200+int*300,520))#position
+        else:#new castle
+            if overworld.castle_pos<520:
+                overworld.castle_pos=520
+            level_surface=pygame.transform.scale(pygame.image.load('sprites/overworld_castle_'+str(int+1)+'.png'),(200,200))
+            level_rect=level_surface.get_rect(midbottom=(200+int*300,overworld.castle_pos))#position
+            overworld.castle_pos-=1
         return level_surface,level_rect
 
 
@@ -146,11 +153,12 @@ class overworld():#level selection stuff
                 if x[i]>1000:
                     x[i]=-50
                 game.screen.blit(GUI.BG_cloud,(x[i],y[i]))
-            for i in range(0,2):
+
+            for i in range(0,map.level):
                 level_surface,level_rect=overworld.draw_map(i)
 
                 text_surface=game_font.render('Level '+str(i+1),True,(255,255,255))#antialias flag
-                text_rect=text_surface.get_rect(center=(200+i*400,500))#position
+                text_rect=text_surface.get_rect(center=(200+i*300,500))#position
 
                 game.screen.blit(level_surface,level_rect)
                 game.screen.blit(text_surface,text_rect)
@@ -179,7 +187,7 @@ class overworld():#level selection stuff
 
 class level():#level
     def __init__(self):
-        self.level='level'
+        self.level=1
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
@@ -188,7 +196,8 @@ class level():#level
         self.items=pygame.sprite.Group()
 
     def select_level(self,level):
-        self.blocks, self.enemies, self.bg_objects, self.goals ,self.items= tools.load_level("levels/"+self.level+str(level))
+        self.cur_level=level
+        self.blocks, self.enemies, self.bg_objects, self.goals ,self.items= tools.load_level("levels/level"+str(level))
 
 def re_spawn():#restart the whole level
     global vertical_momentum
@@ -218,6 +227,9 @@ def check_goal(player,goals):
             moving_left = False
             moving_right = False
             map.clear = True
+            if map.level==map.cur_level:
+                map.level+=1
+                overworld.castle_pos=800
             goal_animation()
 
 def check_death(player,enemies):

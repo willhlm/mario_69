@@ -92,6 +92,7 @@ class Player(pygame.sprite.Sprite):#mario
         self.dead=False
         self.small=True
         self.hit_timer=30
+        self.flower=False
 
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
