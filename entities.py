@@ -225,7 +225,7 @@ class Turtle(Enemy):
         self.frame=1
         self.dead_time=0
         self.jump=jump
-        self.aliv=True
+        self.alive=True
 
     def set_img(self,img):
         if self.jump:

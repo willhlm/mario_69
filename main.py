@@ -250,13 +250,18 @@ def check_death(player,enemies):
             player.hit_timer=0
             death_animation()
 
-    if enemy and not player.small:
+    elif enemy and not player.small and not player.flower and player.hit_timer>30:#shrrom
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
+            player.hit_timer=0
             mario.small=True
+            start_timer()
+            update_hitbox()
+
+    elif enemy and player.flower:#flower
+        if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             player.hit_timer=0
             mario.flower=False
             start_timer()
-            update_hitbox()
 
 #rollback function to be used with spritecollideany() below
 def collided(sprite, other):
