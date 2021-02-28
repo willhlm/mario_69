@@ -164,6 +164,7 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = self.rect.copy()
         self.enemy_type=img
         self.jump=False
+        self.alive=True
 
     def update(self,x_pos,y_pos,scroll):
         if (scroll):
@@ -206,7 +207,7 @@ class Gumba(Enemy):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
         self.dead_time=0
-        self.alive = True
+        #self.alive = True
 
     def set_img(self,img):
         self.image = self.images[img]
@@ -225,7 +226,7 @@ class Turtle(Enemy):
         self.frame=1
         self.dead_time=0
         self.jump=jump
-        self.alive=True
+        #self.alive=True
 
     def set_img(self,img):
         if self.jump:
@@ -250,7 +251,6 @@ class items(Enemy):#shrooms
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
         self.id=img
-        self.alive=True
         self.image = self.images[img]
 
 class projectile(pygame.sprite.Sprite):
@@ -270,5 +270,6 @@ class projectile(pygame.sprite.Sprite):
         self.hitbox = self.rect.copy()
         self.dir=-2
         self.temp=self.rect.top
+        
     def update(self):# dir 0 = right, 1 = left
         self.rect.topleft = [self.rect.topleft[0] + self.dir*projectile.vel, self.rect.topleft[1] + self.vert_momentum]

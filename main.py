@@ -212,6 +212,7 @@ def re_spawn():#restart the whole level
     mario.dead=False
     #mario.update([255,82])
     map.blocks=[]
+
     map.select_level(world.level)
 
 def check_goal(player,goals):
@@ -243,21 +244,23 @@ def check_death(player,enemies):
         update_hitbox()
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
+
     if enemy and player.small and player.hit_timer>30:
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.dead = True
             mario.life-=1
             player.hit_timer=0
+            start_timer()
             death_animation()
 
-    elif enemy and not player.small and not player.flower and player.hit_timer>30:#shrrom
+    if enemy and not player.small and not player.flower and player.hit_timer>30:#shrrom
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             player.hit_timer=0
             mario.small=True
             start_timer()
             update_hitbox()
 
-    elif enemy and player.flower:#flower
+    if enemy and player.flower:#flower
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             player.hit_timer=0
             mario.flower=False
