@@ -188,7 +188,7 @@ class overworld():#level selection stuff
 
 class level():#level
     def __init__(self):
-        self.level=1
+        self.level=3
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
@@ -505,7 +505,7 @@ def grow_animation():
         pygame.time.wait(150)
         mario.small=Frame[j]
         draw()
-        j+=1
+        j+=1#wink
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -615,6 +615,10 @@ def shoot_balls():
                 i.dir=-1
             elif i.dir==-2 and mario.dir==0:
                 i.dir=1
+
+def bowser():
+    pass
+#bowser=entities.Bowser(100,100)
 
 def draw():
     game.display.fill(bg_color)

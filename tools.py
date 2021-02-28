@@ -58,6 +58,15 @@ def load_level(path):
             elif(tile=='p'):
                 new_block = entities.Block(4,x*16,y*16,False,3)#flower block
                 blocks.add(new_block)
+            elif(tile=='s'):
+                new_block = entities.Block(5,x*16,y*16,False,0)#flower block
+                blocks.add(new_block)
+            elif(tile=='j'):
+                new_bg_obj = entities.BG_object(6,x*16,y*16)
+                bg_objects.add(new_bg_obj)
+            elif(tile=='m'):
+                bowser = entities.Bowser(2,x*16,y*16)
+                enemies.add(bowser)
 
             #next 5 are for the castle
             elif(tile=='c'):

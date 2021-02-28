@@ -6,6 +6,7 @@ class Block(pygame.sprite.Sprite):
             2 : pygame.image.load("sprites/ground.gif"),
             3 : pygame.image.load("sprites/block.gif"),
             4 : pygame.image.load("sprites/block_question.png"),
+            5 : pygame.image.load("sprites/block_castle.png"),
             }
 
     def __init__(self,img,x_pos,y_pos,breakable,item):
@@ -28,7 +29,8 @@ class BG_object(pygame.sprite.Sprite):
               2: pygame.image.load("sprites/castle_brick.gif"),
               3: pygame.image.load("sprites/castle_top.gif"),
               4: pygame.image.load("sprites/castle_top2.gif"),
-              5: pygame.image.load("sprites/castle_window.gif")
+              5: pygame.image.load("sprites/castle_window.gif"),
+              6: pygame.image.load("sprites/block_castleBG.png")
               }
 
     def __init__(self,img,x_pos,y_pos):
@@ -207,7 +209,6 @@ class Gumba(Enemy):
         super().__init__(img,x_pos,y_pos)
         self.frame=1
         self.dead_time=0
-        #self.alive = True
 
     def set_img(self,img):
         self.image = self.images[img]
@@ -243,6 +244,35 @@ class Turtle(Enemy):
         self.rect.topleft = [self.rect.topleft[0], self.rect.topleft[1] + Turtle.vert]
         self.hitbox = self.rect
 
+class Bowser(Enemy):
+    images={1:pygame.image.load("sprites/bowser_left1.gif"),
+            2:pygame.image.load("sprites/bowser_left2.gif"),
+            3:pygame.image.load("sprites/bowser_left3.gif"),
+            4:pygame.image.load("sprites/bowser_left4.gif")}
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__(img,x_pos,y_pos)
+        self.frame=1
+        self.alive=True
+        self.Jump=True
+        self.dead_time=0
+        self.life=3
+        self.image = self.images[img]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x_pos,y_pos]
+        self.dir = -1 # -1 left, 1 right
+        self.vert_momentum = 0
+        self.hitbox = self.rect.copy()
+        self.enemy_type=-1
+        self.id=-1
+
+    def set_img(self,img):
+        self.image = self.images[img]
+
+    def movement(self,x_pos,y_pos):
+        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1]+y_pos]
+
+
 class items(Enemy):#shrooms
     images = {1 : pygame.image.load("sprites/item_redmushroom.png"),
             2 : pygame.image.load("sprites/item_greenmushroom.png"),
@@ -270,6 +300,6 @@ class projectile(pygame.sprite.Sprite):
         self.hitbox = self.rect.copy()
         self.dir=-2
         self.temp=self.rect.top
-        
+
     def update(self):# dir 0 = right, 1 = left
         self.rect.topleft = [self.rect.topleft[0] + self.dir*projectile.vel, self.rect.topleft[1] + self.vert_momentum]
