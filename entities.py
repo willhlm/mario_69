@@ -245,6 +245,8 @@ class Turtle(Enemy):
         self.hitbox = self.rect
 
 class Bowser(Enemy):
+    vel=1
+
     images={1:pygame.image.load("sprites/bowser_left1.gif"),
             2:pygame.image.load("sprites/bowser_left2.gif"),
             3:pygame.image.load("sprites/bowser_left3.gif"),
@@ -252,25 +254,16 @@ class Bowser(Enemy):
 
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
-        self.frame=1
-        self.alive=True
-        self.Jump=True
+        self.frame=0
         self.dead_time=0
-        self.life=3
-        self.image = self.images[img]
-        self.rect = self.image.get_rect()
-        self.rect.topleft = [x_pos,y_pos]
-        self.dir = -1 # -1 left, 1 right
-        self.vert_momentum = 0
-        self.hitbox = self.rect.copy()
         self.enemy_type=-1
-        self.id=-1
+        self.life=3
 
     def set_img(self,img):
         self.image = self.images[img]
 
-    def movement(self,x_pos,y_pos):
-        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1]+y_pos]
+    def movement(self,y_pos):
+        self.rect.topleft = [self.rect.topleft[0] + self.vel*self.dir, self.rect.topleft[1]+y_pos]
 
 
 class items(Enemy):#shrooms
@@ -284,13 +277,14 @@ class items(Enemy):#shrooms
         self.image = self.images[img]
 
 class projectile(pygame.sprite.Sprite):
-    img=pygame.image.load("sprites/item_flowerball.gif")
+    images={1:pygame.image.load("sprites/item_flowerball.gif"),
+            2:pygame.image.load("sprites/bowser_left_projectile.gif")}
     number_of_balls=0
     vel=2
 
-    def __init__(self,x_pos,y_pos):
+    def __init__(self,img,x_pos,y_pos):
         super().__init__()
-        self.image = self.img
+        self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
         #self.hitbox = self.rect.copy()
@@ -300,6 +294,7 @@ class projectile(pygame.sprite.Sprite):
         self.hitbox = self.rect.copy()
         self.dir=-2
         self.temp=self.rect.top
-
+        self.type=img
+        
     def update(self):# dir 0 = right, 1 = left
         self.rect.topleft = [self.rect.topleft[0] + self.dir*projectile.vel, self.rect.topleft[1] + self.vert_momentum]

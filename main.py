@@ -234,7 +234,7 @@ def check_goal(player,goals):
                 overworld.castle_pos=800
             goal_animation()
 
-def check_death(player,enemies):
+def check_death(player,enemies,flower_balls):
     if (mario.hitbox.bottom > 192):
         mario.dead = True
         mario.life-=1
@@ -243,8 +243,27 @@ def check_death(player,enemies):
         mario.flower=False
         update_hitbox()
 
-    enemy = pygame.sprite.spritecollideany(player,enemies,collided)
 
+    #bowser balls
+    ball_list = [i for i in flower_balls.sprites() if i.type==2]#bowser ball
+    if ball_list:
+        for i in ball_list:
+            if i.rect.colliderect(player.rect):
+                if player.small and player.hit_timer>30:#small
+                    mario.life-=1
+                    mario.dead = True
+                    death_animation()
+                elif not player.small and not player.flower and player.hit_timer>30:
+                    player.small=True
+                    player.hit_timer=0
+                    start_timer()
+                    update_hitbox()
+                elif player.flower:
+                    player.flower=False
+                    player.hit_timer=0
+                    start_timer()
+
+    enemy = pygame.sprite.spritecollideany(player,enemies,collided)
     if enemy and player.small and player.hit_timer>30:
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.dead = True
@@ -373,10 +392,17 @@ def move_player(mario, blocks,enemies,items,flower_balls):
                 col_enemy.alive=False
                 vertical_momentum=-2#mario
 
+                if col_enemy.enemy_type==-1:#if it is bowser
+                    col_enemy.life-=1
+                    if col_enemy.life<=0:
+                        col_enemy.kill()
+            #if col_enemy.enemy_type==-1:#bowser
+        #        vertical_momentum=-2#mario
+        #        col_enemy.life-=1
+
     #collision between groups
     enemies.update(0,0.2,False)
     items.update(0,0.2,False)
-
 
     for item in items:
         col_block = pygame.sprite.spritecollideany(item,blocks,collided)
@@ -400,13 +426,6 @@ def move_player(mario, blocks,enemies,items,flower_balls):
             if ball.rect.top<ball.temp:#kill ball if collide with block from side
                 ball.kill()
 
-
-
-        #        ball.kill()
-        #if col_block and ball.rect.bottom >= col_block.hitbox.top and
-        #or (ball.rect.left - col_block.rect.right < 0) and ball.vert_momentum!=-5
-
-
     #ball enemy collisions
     for ball in flower_balls:
         col_enemy = pygame.sprite.spritecollideany(ball,enemies,collided=None)
@@ -415,7 +434,15 @@ def move_player(mario, blocks,enemies,items,flower_balls):
             if col_enemy.jump:
                 col_enemy.jump=False
             else:
-                col_enemy.kill()
+                if col_enemy.enemy_type==-1:#bowswer
+                    col_enemy.life-=1
+                    if col_enemy.life<=0:
+                        col_enemy.kill()
+                else:
+                    col_enemy.kill()
+
+
+
     enemies.update(0,0,False)
     items.update(0,0,False)
     flower_balls.update()
@@ -476,6 +503,8 @@ def move_player(mario, blocks,enemies,items,flower_balls):
                     update_hitbox()
     air_timer += 1
 
+
+
     ball_list = [i for i in flower_balls.sprites()]
     for i in ball_list:
         i.timer+=1
@@ -526,6 +555,29 @@ world=overworld(True)#flag to open after start game menu
 def enemy_animation(enemies):
     gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
     turtle_list = [i for i in map.enemies.sprites() if i.enemy_type==2]
+    bowser=[i for i in map.enemies.sprites() if i.enemy_type==-1]
+
+    if bowser:#if not empty
+        bowser[0].set_img(bowser[0].frame//10+1)
+        bowser[0].frame+=1
+        if bowser[0].frame>18:
+            bowser[0].frame=0
+
+        if random.randint(0,100)<2:
+            bowser[0].dir*=-1#5% chance to change dir
+
+            flower_balls.add(entities.projectile(2,bowser[0].rect.center[0]-50,bowser[0].rect.center[1]))#spawn the item
+            ball_list = [i for i in flower_balls.sprites() if i.type==2]
+            for i in ball_list:
+                i.vert_momentum=0
+
+            #for i in ball_list:
+            #    if i.dir==-2 and mario.dir==1:
+            #        i.dir=-1
+            #    elif i.dir==-2 and mario.dir==0:
+            #        i.dir=1
+
+
 
     for i in gumba_list:
         if i.alive:
@@ -608,17 +660,14 @@ def goal_animation():
 
 def shoot_balls():
     if len(flower_balls)<2:
-        flower_balls.add(entities.projectile(mario.rect.center[0],mario.rect.center[1]))#spawn the item
-        ball_list = [i for i in flower_balls.sprites()]
+        flower_balls.add(entities.projectile(1,mario.rect.center[0],mario.rect.center[1]))#spawn the item
+        ball_list = [i for i in flower_balls.sprites() if i.type==1]
         for i in ball_list:
             if i.dir==-2 and mario.dir==1:
                 i.dir=-1
             elif i.dir==-2 and mario.dir==0:
                 i.dir=1
 
-def bowser():
-    pass
-#bowser=entities.Bowser(100,100)
 
 def draw():
     game.display.fill(bg_color)
@@ -641,7 +690,7 @@ while True:#Game loop
     map.enemies.update(-scroll[0],0, True)
     map.items.update(-scroll[0],-scroll[1],True)
 
-    check_death(mario, map.enemies)
+    check_death(mario, map.enemies,flower_balls)
     check_goal(mario, map.goals)
 
     if map.clear:
