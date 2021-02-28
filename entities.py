@@ -81,6 +81,20 @@ class Player(pygame.sprite.Sprite):#mario
             10: pygame.image.load("sprites/jump_left_big.png"),
             }
 
+
+    IMAGES_flower = {0: pygame.image.load("sprites/stand_right_flower.gif"),
+            1: pygame.image.load("sprites/stand_left_flower.gif"),
+            2: pygame.image.load("sprites/run_right1_flower.gif"),
+            3: pygame.image.load("sprites/run_right2_flower.gif"),
+            4: pygame.image.load("sprites/run_right3_flower.gif"),
+            5: pygame.image.load("sprites/run_left1_flower.gif"),
+            6: pygame.image.load("sprites/run_left2_flower.gif"),
+            7: pygame.image.load("sprites/run_left3_flower.gif"),
+            8: pygame.image.load("sprites/dead.png"),
+            9: pygame.image.load("sprites/jump_right_flower.gif"),
+            10: pygame.image.load("sprites/jump_left_flower.gif"),
+            }
+
     def __init__(self,x_pos,y_pos):
         super().__init__()
         self.image = self.images[0]
@@ -114,7 +128,7 @@ class Player(pygame.sprite.Sprite):#mario
                 self.image = self.images[self.dir + 9]
             else:
                 self.image = self.images[val]
-        else:
+        elif not self.small and not self.flower:
             if(val in range(2,4)):
                 self.dir = 0
             elif(val in range(5,7)):
@@ -125,6 +139,17 @@ class Player(pygame.sprite.Sprite):#mario
                 self.image = self.IMAGES[self.dir + 9]
             else:
                 self.image = self.IMAGES[val]
+        elif self.flower:
+                if(val in range(2,4)):
+                    self.dir = 0
+                elif(val in range(5,7)):
+                    self.dir = 1
+                if(val == 0):
+                    self.image = self.IMAGES_flower[self.dir]
+                elif(val == 1):
+                    self.image = self.IMAGES_flower[self.dir + 9]
+                else:
+                    self.image = self.IMAGES_flower[val]
 
 class Enemy(pygame.sprite.Sprite):
     vel = 1
@@ -219,10 +244,31 @@ class Turtle(Enemy):
 
 class items(Enemy):#shrooms
     images = {1 : pygame.image.load("sprites/item_redmushroom.png"),
-            2 : pygame.image.load("sprites/item_greenmushroom.png"),}
+            2 : pygame.image.load("sprites/item_greenmushroom.png"),
+            3: pygame.image.load("sprites/item_flower.png"),}
 
     def __init__(self,img,x_pos,y_pos):
         super().__init__(img,x_pos,y_pos)
         self.id=img
         self.alive=True
         self.image = self.images[img]
+
+class projectile(pygame.sprite.Sprite):
+    img=pygame.image.load("sprites/item_flowerball.gif")
+    number_of_balls=0
+    vel=2
+
+    def __init__(self,x_pos,y_pos):
+        super().__init__()
+        self.image = self.img
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x_pos,y_pos]
+        #self.hitbox = self.rect.copy()
+        self.number_of_balls+=1
+        self.timer=0
+        self.vert_momentum = 3
+        self.hitbox = self.rect.copy()
+        self.dir=-2
+        self.temp=self.rect.top
+    def update(self):# dir 0 = right, 1 = left
+        self.rect.topleft = [self.rect.topleft[0] + self.dir*projectile.vel, self.rect.topleft[1] + self.vert_momentum]

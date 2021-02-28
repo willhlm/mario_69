@@ -55,6 +55,9 @@ def load_level(path):
             elif(tile=='9'):
                 new_block = entities.Block(4,x*16,y*16,False,2)
                 blocks.add(new_block)
+            elif(tile=='p'):
+                new_block = entities.Block(4,x*16,y*16,False,3)#flower block
+                blocks.add(new_block)
 
             #next 5 are for the castle
             elif(tile=='c'):

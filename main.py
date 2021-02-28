@@ -18,6 +18,7 @@ bg_color = (92,148,252)
 mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
+flower_balls = pygame.sprite.Group()
 
 class GUI():
 
@@ -238,6 +239,7 @@ def check_death(player,enemies):
         mario.life-=1
         death_animation()
         mario.small=True
+        mario.flower=False
         update_hitbox()
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
@@ -252,6 +254,7 @@ def check_death(player,enemies):
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.small=True
             player.hit_timer=0
+            mario.flower=False
             start_timer()
             update_hitbox()
 
@@ -265,7 +268,7 @@ def collided(sprite, other):
 def start_timer():
     mario.hit_timer+=1
 
-def move_player(mario, blocks,enemies,items):
+def move_player(mario, blocks,enemies,items,flower_balls):
 
     global vertical_momentum
     global horizontal_momentum
@@ -332,7 +335,6 @@ def move_player(mario, blocks,enemies,items):
             horizontal_momentum /= 2
 
     mario.update([0,y-scroll[1]])
-
     col_block = pygame.sprite.spritecollideany(mario,blocks,collided)
     if(col_block and not mario.dead):
         if y < 0:
@@ -367,6 +369,7 @@ def move_player(mario, blocks,enemies,items):
     enemies.update(0,0.2,False)
     items.update(0,0.2,False)
 
+
     for item in items:
         col_block = pygame.sprite.spritecollideany(item,blocks,collided)
         if col_block:
@@ -380,9 +383,35 @@ def move_player(mario, blocks,enemies,items):
             enemy.rect.bottom = col_block.hitbox.top
             enemy.vert_momentum = 0
 
+    #ball block collision
+    for ball in flower_balls:
+        col_block = pygame.sprite.spritecollideany(ball,blocks,collided=None)
+        if col_block:
+            ball.rect.bottom = col_block.hitbox.top
+            ball.vert_momentum = -5
+            if ball.rect.top<ball.temp:#kill ball if collide with block from side
+                ball.kill()
 
+
+
+        #        ball.kill()
+        #if col_block and ball.rect.bottom >= col_block.hitbox.top and
+        #or (ball.rect.left - col_block.rect.right < 0) and ball.vert_momentum!=-5
+
+
+    #ball enemy collisions
+    for ball in flower_balls:
+        col_enemy = pygame.sprite.spritecollideany(ball,enemies,collided=None)
+        if col_enemy:
+            ball.kill()
+            if col_enemy.jump:
+                col_enemy.jump=False
+            else:
+                col_enemy.kill()
     enemies.update(0,0,False)
     items.update(0,0,False)
+    flower_balls.update()
+
     for item in items:
         col_block = pygame.sprite.spritecollideany(item,blocks,collided)
         if col_block:
@@ -421,17 +450,30 @@ def move_player(mario, blocks,enemies,items):
             enemy.dir *= -1
             col_block.dir *= -1
 
+    #collision between mario and items
     item = pygame.sprite.spritecollideany(mario,items,collided)
     if item:
         if ((mario.rect.right - item.rect.left > 0) and item.alive==True or (mario.rect.left - item.rect.right < 0) and item.alive==True):
 
             item.kill()
-            if mario.small and item.id==1:
+            if mario.small and item.id==1:#red shrrom
                 grow_animation()
                 update_hitbox()
-            elif item.id==2:
+            elif item.id==2:#green shrrom
                 mario.life+=1
+            elif item.id==3:#flower
+                mario.flower=True
+                if mario.small:
+                    grow_animation()
+                    update_hitbox()
     air_timer += 1
+
+    ball_list = [i for i in flower_balls.sprites()]
+    for i in ball_list:
+        i.timer+=1
+        i.vert_momentum+=1
+        if i.timer>50:
+            i.kill()
 
 def update_hitbox():
     if mario.small:#insert small mario hitbox
@@ -456,7 +498,6 @@ def grow_animation():
         mario.small=Frame[j]
         draw()
         j+=1
-
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -557,6 +598,16 @@ def goal_animation():
         pygame.display.update()
     pygame.time.wait(500)
 
+def shoot_balls():
+    if len(flower_balls)<2:
+        flower_balls.add(entities.projectile(mario.rect.center[0],mario.rect.center[1]))#spawn the item
+        ball_list = [i for i in flower_balls.sprites()]
+        for i in ball_list:
+            if i.dir==-2 and mario.dir==1:
+                i.dir=-1
+            elif i.dir==-2 and mario.dir==0:
+                i.dir=1
+
 def draw():
     game.display.fill(bg_color)
     map.bg_objects.draw(game.display)
@@ -565,6 +616,7 @@ def draw():
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
     map.items.draw(game.display)
+    flower_balls.draw(game.display)
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     pygame.display.update()
 
@@ -609,6 +661,8 @@ while True:#Game loop
                 sprint = True
             if event.key==pygame.K_ESCAPE:
                 game.ESC=True
+            if event.key==pygame.K_f and mario.flower:
+                shoot_balls()
 
         if event.type == KEYUP:
             if event.key == K_RIGHT:
@@ -619,10 +673,11 @@ while True:#Game loop
                 sprint = False
 
 
+
     game.start_menu(False)
     world.world_select()
 
-    move_player(mario,map.blocks,map.enemies,map.items)
+    move_player(mario,map.blocks,map.enemies,map.items,flower_balls)
     enemy_animation(map.enemies)
     if mario.hit_timer!=0:
         start_timer()
