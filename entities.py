@@ -44,9 +44,12 @@ class BG_object(pygame.sprite.Sprite):
 
 class Goal(pygame.sprite.Sprite):
 
-    def __init__(self,x_pos,y_pos):
+    images = {0: pygame.image.load("sprites/castle_door.gif"),
+            1: pygame.image.load("sprites/peach.gif")}
+
+    def __init__(self,img,x_pos,y_pos):
         super().__init__()
-        self.image = pygame.image.load("sprites/castle_door.gif")
+        self.image = self.images[img]
         self.rect = self.image.get_rect()
         self.rect.topleft = [x_pos,y_pos]
         self.hitbox = self.rect
@@ -167,6 +170,7 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_type=img
         self.jump=False
         self.alive=True
+        self.no_kill=40
 
     def update(self,x_pos,y_pos,scroll):
         if (scroll):
@@ -295,6 +299,6 @@ class projectile(pygame.sprite.Sprite):
         self.dir=-2
         self.temp=self.rect.top
         self.type=img
-        
+
     def update(self):# dir 0 = right, 1 = left
         self.rect.topleft = [self.rect.topleft[0] + self.dir*projectile.vel, self.rect.topleft[1] + self.vert_momentum]

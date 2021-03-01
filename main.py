@@ -13,7 +13,6 @@ horizontal_momentum = 0
 vertical_momentum = 0
 true_scroll = [0,0]
 scroll = [0,0]
-bg_color = (92,148,252)
 
 mario_bros = pygame.sprite.Group()
 blocks = pygame.sprite.Group()
@@ -188,13 +187,14 @@ class overworld():#level selection stuff
 
 class level():#level
     def __init__(self):
-        self.level=3
+        self.level=1
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
         self.goals = pygame.sprite.Group()
         self.clear = False
         self.items=pygame.sprite.Group()
+        self.bg_color=(92,148,252)
 
     def select_level(self,level):
         self.cur_level=level
@@ -207,7 +207,7 @@ def re_spawn():#restart the whole level
     vert_momentum = 0
     horizontal_momentum = 0
 
-    mario.rect.topleft=[255,82]
+    mario.rect.topleft=[55,82]
     mario.hitbox=mario.rect
     mario.dead=False
     #mario.update([255,82])
@@ -232,6 +232,8 @@ def check_goal(player,goals):
             if map.level==map.cur_level:
                 map.level+=1
                 overworld.castle_pos=800
+            if map.level>=3:
+                map.level=3
             goal_animation()
 
 def check_death(player,enemies,flower_balls):
@@ -264,7 +266,7 @@ def check_death(player,enemies,flower_balls):
                     start_timer()
 
     enemy = pygame.sprite.spritecollideany(player,enemies,collided)
-    if enemy and player.small and player.hit_timer>30:
+    if enemy and player.small and player.hit_timer>30 and enemy.no_kill>30:
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             mario.dead = True
             mario.life-=1
@@ -272,14 +274,14 @@ def check_death(player,enemies,flower_balls):
             start_timer()
             death_animation()
 
-    if enemy and not player.small and not player.flower and player.hit_timer>30:#shrrom
+    if enemy and not player.small and not player.flower and player.hit_timer>30 and enemy.no_kill>30:#shrrom
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             player.hit_timer=0
             mario.small=True
             start_timer()
             update_hitbox()
 
-    if enemy and player.flower:#flower
+    if enemy and player.flower and enemy.no_kill>30:#flower
         if ((player.rect.right - enemy.rect.left > 0) and enemy.alive==True or (player.rect.left - enemy.rect.right < 0) and enemy.alive==True):
             player.hit_timer=0
             mario.flower=False
@@ -386,19 +388,21 @@ def move_player(mario, blocks,enemies,items,flower_balls):
     if (col_enemy and not mario.dead):#stomp
         if y>1 and mario.rect.bottom > col_enemy.rect.top:#stomp
             if col_enemy.jump:
+                col_enemy.no_kill=1
                 col_enemy.jump=False
                 vertical_momentum=-2#mario
+                mario.hit_timer=0
+                start_timer()
+
             else:
                 col_enemy.alive=False
                 vertical_momentum=-2#mario
 
-                if col_enemy.enemy_type==-1:#if it is bowser
-                    col_enemy.life-=1
-                    if col_enemy.life<=0:
-                        col_enemy.kill()
-            #if col_enemy.enemy_type==-1:#bowser
-        #        vertical_momentum=-2#mario
-        #        col_enemy.life-=1
+            if col_enemy.enemy_type==-1:#if it is bowser
+                col_enemy.life-=1
+                if col_enemy.life<=0:
+                    col_enemy.kill()
+
 
     #collision between groups
     enemies.update(0,0.2,False)
@@ -504,7 +508,6 @@ def move_player(mario, blocks,enemies,items,flower_balls):
     air_timer += 1
 
 
-
     ball_list = [i for i in flower_balls.sprites()]
     for i in ball_list:
         i.timer+=1
@@ -571,13 +574,6 @@ def enemy_animation(enemies):
             for i in ball_list:
                 i.vert_momentum=0
 
-            #for i in ball_list:
-            #    if i.dir==-2 and mario.dir==1:
-            #        i.dir=-1
-            #    elif i.dir==-2 and mario.dir==0:
-            #        i.dir=1
-
-
 
     for i in gumba_list:
         if i.alive:
@@ -595,7 +591,8 @@ def enemy_animation(enemies):
                 i.kill()
 
     for i in turtle_list:
-
+        if i.no_kill>0:
+            i.no_kill+=1
         if i.jump:#jumping
             i.vert+=1
             i.hop()
@@ -633,30 +630,55 @@ def death_animation():
     re_spawn()
 
 def goal_animation():
-    flag_surface=pygame.image.load('sprites/castleflag_complete.png')
-    i=0
+    if map.cur_level!=3:
+        flag_surface=pygame.image.load('sprites/castleflag_complete.png')
+        i=0
 
-    mario.set_img(0)
-    pygame.display.update()
-    pygame.time.wait(300)
-
-    #remove mario
-    while i<20:
-        flag_rect=flag_surface.get_rect(center=(320,200-i))#position
-        i+=1
-        pygame.time.wait(50)
-
-        #draw except mario
-        game.display.fill(bg_color)
-        map.bg_objects.draw(game.display)
-        map.blocks.draw(game.display)
-        map.goals.draw(game.display)
-        map.enemies.draw(game.display)
-        map.items.draw(game.display)
-        game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
-        game.screen.blit(flag_surface,flag_rect)
+        mario.set_img(0)
         pygame.display.update()
-    pygame.time.wait(500)
+        pygame.time.wait(300)
+
+        #remove mario
+        while i<20:
+            flag_rect=flag_surface.get_rect(center=(320,200-i))#position
+            i+=1
+            pygame.time.wait(50)
+
+            #draw except mario
+            game.display.fill(map.bg_color)
+            map.bg_objects.draw(game.display)
+            map.blocks.draw(game.display)
+            map.goals.draw(game.display)
+            map.enemies.draw(game.display)
+            map.items.draw(game.display)
+            game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
+            game.screen.blit(flag_surface,flag_rect)
+            pygame.display.update()
+        pygame.time.wait(500)
+
+    elif map.cur_level==3:
+        pygame.time.wait(500)
+        text='Oh mario you are the best. Now let us close this game, so that I can give you a BJ!'
+        j=0
+        h=0
+        for i in text:
+
+            pygame.time.wait(50)
+
+            if i=='.' or i==',':
+                h+=40
+                j=0
+
+            text_surface=game_font.render(i,True,(255,255,255))#antialias flag
+            text_rect=text_surface.get_rect(center=(100+j,100+h))#position
+
+            game.screen.blit(text_surface,text_rect)
+
+            pygame.display.update()
+            j+=25
+        pygame.time.wait(2000)
+        pygame.quit()
+        sys.exit()
 
 def shoot_balls():
     if len(flower_balls)<2:
@@ -668,9 +690,15 @@ def shoot_balls():
             elif i.dir==-2 and mario.dir==0:
                 i.dir=1
 
+def life_display():#fix
+        score_surface=game_font.render(f'Life: {mario.life}',True,(255,255,255))#antialias flag
+        score_rect=score_surface.get_rect(center=(100,50))
+        game.screen.blit(score_surface,score_rect)
 
 def draw():
-    game.display.fill(bg_color)
+    if map.cur_level==3:
+        map.bg_color=(0,0,0)
+    game.display.fill(map.bg_color)
     map.bg_objects.draw(game.display)
     map.blocks.draw(game.display)
     map.goals.draw(game.display)
@@ -679,6 +707,7 @@ def draw():
     map.items.draw(game.display)
     flower_balls.draw(game.display)
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
+    life_display()
     pygame.display.update()
 
 while True:#Game loop
