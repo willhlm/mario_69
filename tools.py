@@ -17,6 +17,7 @@ def load_level(path):
     bg_objects = pygame.sprite.Group()
     goals = pygame.sprite.Group()
     items=pygame.sprite.Group()
+    easter=pygame.sprite.Group()
 
     x = 0
     for column in game_map:
@@ -70,6 +71,9 @@ def load_level(path):
             elif(tile=='h'):
                 new_goal = entities.Goal(1,x*16,y*16)#peach
                 goals.add(new_goal)
+            elif(tile=='t'):
+                new_toad = entities.Easter_egg(0,x*16,y*16)#peach
+                easter.add(new_toad)
 
             #next 5 are for the castle
             elif(tile=='c'):
@@ -91,4 +95,4 @@ def load_level(path):
             y += 1
         x+= 1
 
-    return blocks, enemies, bg_objects, goals, items
+    return blocks, enemies, bg_objects, goals, items, easter

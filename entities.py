@@ -58,6 +58,24 @@ class Goal(pygame.sprite.Sprite):
         self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
         self.hitbox = self.rect
 
+class Easter_egg(pygame.sprite.Sprite):
+    images={0: pygame.image.load("sprites/toad.gif")}
+    text={1:'Hey Mario! You know Johan sucks right?',
+          2: 'I will grant you the abillity to dress as bowser'}
+
+    def __init__(self,img,x_pos,y_pos):
+        super().__init__()
+        self.image = self.images[img]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x_pos,y_pos]
+        self.hitbox = self.rect.copy()
+        self.letter=1
+        self.print=Easter_egg.text
+
+    def update(self,x_pos,y_pos):
+        self.rect.topleft = [self.rect.topleft[0] + x_pos, self.rect.topleft[1] + y_pos]
+        self.hitbox = self.rect
+
 class Player(pygame.sprite.Sprite):#mario
 
     images = {0: pygame.image.load("sprites/stand_right.gif"),
@@ -99,6 +117,17 @@ class Player(pygame.sprite.Sprite):#mario
             9: pygame.image.load("sprites/jump_right_flower.gif"),
             10: pygame.image.load("sprites/jump_left_flower.gif"),
             }
+    IMAGES_B={0: pygame.image.load("sprites/bowser_right1.gif"),
+            1: pygame.image.load("sprites/bowser_left1.gif"),
+            2: pygame.image.load("sprites/bowser_right1.gif"),
+            3: pygame.image.load("sprites/bowser_right2.gif"),
+            4: pygame.image.load("sprites/bowser_right3.gif"),
+            5: pygame.image.load("sprites/bowser_left1.gif"),
+            6: pygame.image.load("sprites/bowser_left2.gif"),
+            7: pygame.image.load("sprites/bowser_left3.gif"),
+            8: pygame.image.load("sprites/bowser_left1.gif"),
+            9: pygame.image.load("sprites/bowser_right1.gif"),
+            10: pygame.image.load("sprites/bowser_left1.gif")}
 
     def __init__(self,x_pos,y_pos):
         super().__init__()
@@ -112,6 +141,7 @@ class Player(pygame.sprite.Sprite):#mario
         self.small=True
         self.hit_timer=30
         self.flower=False
+        self.bowser=False
 
     def update(self,pos):
         self.rect.topleft = [self.rect.topleft[0] + pos[0], self.rect.topleft[1] + pos[1]]
@@ -122,6 +152,11 @@ class Player(pygame.sprite.Sprite):#mario
         # 1 = stand left
         # 2 - 4 = running right
         # 5 - 7 = running left
+        if self.bowser==True:
+            self.images=self.IMAGES_B
+            self.IMAGES=self.IMAGES_B
+            self.IMAGES_flower=self.IMAGES_B
+
         if self.small:
             if(val in range(2,4)):
                 self.dir = 0

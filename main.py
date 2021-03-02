@@ -40,6 +40,7 @@ class GUI():
     def start_menu(self,first=True):#escape botton
         x=[]#placeholder
         y=[]
+
         for i in range(0,20):
             y.append(random.randint(0,400))
             x.append(random.randint(0,900))
@@ -56,8 +57,21 @@ class GUI():
             exit_surface=game_font.render('Exit game',True,(255,255,255))#antialias flag
             exit_rect=start_surface.get_rect(center=(200,400))#position
 
+            if map.bowser==True:
+                ChangeCharacter_surface=game_font.render('Change character',True,(255,255,255))#antialias flag
+                ChangeCharacter_rect=ChangeCharacter_surface.get_rect(center=(200,300))#position
+                pygame.draw.rect(game.screen,(255,255,255),ChangeCharacter_rect,width=2)
+                game.screen.blit(ChangeCharacter_surface,ChangeCharacter_rect)
+
+                if ChangeCharacter_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
+                    self.ESC=False
+                    self.click=False
+                    mario.bowser=True
+                    update_hitbox()
+
             pygame.draw.rect(game.screen,(255,255,255),start_rect,width=2)
             pygame.draw.rect(game.screen,(255,255,255),exit_rect,width=2)
+
 
             if start_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
                 self.ESC=False
@@ -84,6 +98,7 @@ class GUI():
                 game.screen.blit(self.BG_cloud,(x[i],y[i]))
 
             game.screen.blit(start_surface,start_rect)
+
             game.screen.blit(exit_surface,exit_rect)
 
             pygame.display.update()
@@ -187,7 +202,7 @@ class overworld():#level selection stuff
 
 class level():#level
     def __init__(self):
-        self.level=1
+        self.level=2
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
@@ -195,10 +210,12 @@ class level():#level
         self.clear = False
         self.items=pygame.sprite.Group()
         self.bg_color=(92,148,252)
+        self.easter=pygame.sprite.Group()
+        self.bowser=False
 
     def select_level(self,level):
         self.cur_level=level
-        self.blocks, self.enemies, self.bg_objects, self.goals ,self.items= tools.load_level("levels/level"+str(level))
+        self.blocks, self.enemies, self.bg_objects, self.goals ,self.items, self.easter= tools.load_level("levels/level"+str(level))
 
 def re_spawn():#restart the whole level
     global vertical_momentum
@@ -516,12 +533,16 @@ def move_player(mario, blocks,enemies,items,flower_balls):
             i.kill()
 
 def update_hitbox():
-    if mario.small:#insert small mario hitbox
-        mario.image = mario.images[0]
-        mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
-    else:#insert large mario hitbox
-        mario.image = mario.IMAGES[0]
-        mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
+    if not mario.bowser:
+        if mario.small:#insert small mario hitbox
+            mario.image = mario.images[0]
+            mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
+        else:#insert large mario hitbox
+            mario.image = mario.IMAGES[0]
+            mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
+    else:
+            mario.image = mario.IMAGES_B[0]
+            mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
 
 def grow_animation():
     j=0
@@ -538,22 +559,6 @@ def grow_animation():
         mario.small=Frame[j]
         draw()
         j+=1#wink
-
-pygame.init()
-clock = pygame.time.Clock()
-pygame.display.set_caption('Pygame Platformer')
-
-game_font=pygame.font.Font('freesansbold.ttf',40)
-
-mario = entities.Player(55,82)
-mario_bros = pygame.sprite.Group()
-mario_bros.add(mario)
-
-map=level()
-
-game=GUI(False)#The escape botton flag
-game.start_menu()#Start with start game menu
-world=overworld(True)#flag to open after start game menu
 
 def enemy_animation(enemies):
     gumba_list = [i for i in map.enemies.sprites() if i.enemy_type==1]
@@ -700,15 +705,50 @@ def draw():
         map.bg_color=(0,0,0)
     game.display.fill(map.bg_color)
     map.bg_objects.draw(game.display)
+    map.easter.draw(game.display)
     map.blocks.draw(game.display)
     map.goals.draw(game.display)
     mario_bros.draw(game.display)
     map.enemies.draw(game.display)
+
+
     map.items.draw(game.display)
     flower_balls.draw(game.display)
     game.screen.blit(pygame.transform.scale(game.display,game.WINDOW_SIZE),(0,0))
     life_display()
+    easter(mario,map.easter)
+
     pygame.display.update()
+
+def easter(mario,easter):
+    game_font=pygame.font.Font('freesansbold.ttf',25)
+    col_easter = pygame.sprite.spritecollideany(mario,easter,collided)
+    if(col_easter):
+
+        text_surface=game_font.render(col_easter.print[map.cur_level],True,(255,255,255))#antialias flag
+        text_rect=text_surface.get_rect(center=(500,300))#position
+
+        game.screen.blit(text_surface,text_rect)
+        if map.cur_level==2:
+            map.bowser=True
+
+
+pygame.init()
+
+clock = pygame.time.Clock()
+pygame.display.set_caption('Pygame Platformer')
+
+game_font=pygame.font.Font('freesansbold.ttf',40)
+
+mario = entities.Player(55,82)
+mario_bros = pygame.sprite.Group()
+mario_bros.add(mario)
+
+map=level()
+
+game=GUI(False)#The escape botton flag
+game.start_menu()#Start with start game menu
+world=overworld(True)#flag to open after start game menu
 
 while True:#Game loop
     scroll[0] += mario.rect.center[0] - scroll[0] - 100
@@ -718,6 +758,8 @@ while True:#Game loop
     map.goals.update(-scroll[0],-scroll[1])
     map.enemies.update(-scroll[0],0, True)
     map.items.update(-scroll[0],-scroll[1],True)
+
+    map.easter.update(-scroll[0],-scroll[1])
 
     check_death(mario, map.enemies,flower_balls)
     check_goal(mario, map.goals)
@@ -766,7 +808,6 @@ while True:#Game loop
 
     game.start_menu(False)
     world.world_select()
-
     move_player(mario,map.blocks,map.enemies,map.items,flower_balls)
     enemy_animation(map.enemies)
     if mario.hit_timer!=0:
