@@ -57,21 +57,27 @@ class GUI():
             exit_surface=game_font.render('Exit game',True,(255,255,255))#antialias flag
             exit_rect=start_surface.get_rect(center=(200,400))#position
 
-            if map.bowser==True:
-                ChangeCharacter_surface=game_font.render('Change character',True,(255,255,255))#antialias flag
-                ChangeCharacter_rect=ChangeCharacter_surface.get_rect(center=(200,300))#position
-                pygame.draw.rect(game.screen,(255,255,255),ChangeCharacter_rect,width=2)
-                game.screen.blit(ChangeCharacter_surface,ChangeCharacter_rect)
 
-                if ChangeCharacter_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
-                    self.ESC=False
-                    self.click=False
-                    mario.bowser=True
-                    update_hitbox()
 
             pygame.draw.rect(game.screen,(255,255,255),start_rect,width=2)
             pygame.draw.rect(game.screen,(255,255,255),exit_rect,width=2)
 
+            if map.bowser==True:
+                ChangeCharacter_surface=game_font.render('Change character',True,(255,255,255))#antialias flag
+                ChangeCharacter_rect=ChangeCharacter_surface.get_rect(center=(200,200))#position
+
+                pygame.draw.rect(game.screen,(255,255,255),ChangeCharacter_rect,width=2)
+
+
+                if ChangeCharacter_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
+                    self.ESC=False
+                    self.click=False
+                    if mario.bowser==False:
+                        mario.bowser=True
+                        update_hitbox()
+                    elif mario.bowser==True:
+                        mario.bowser=False
+                        update_hitbox()
 
             if start_rect.collidepoint((pygame.mouse.get_pos())) ==True and self.click==True:
                 self.ESC=False
@@ -98,8 +104,9 @@ class GUI():
                 game.screen.blit(self.BG_cloud,(x[i],y[i]))
 
             game.screen.blit(start_surface,start_rect)
-
             game.screen.blit(exit_surface,exit_rect)
+            if map.bowser==True:
+                game.screen.blit(ChangeCharacter_surface,ChangeCharacter_rect)
 
             pygame.display.update()
 
@@ -202,7 +209,7 @@ class overworld():#level selection stuff
 
 class level():#level
     def __init__(self):
-        self.level=2
+        self.level=1
         self.blocks = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bg_objects = pygame.sprite.Group()
@@ -533,10 +540,11 @@ def move_player(mario, blocks,enemies,items,flower_balls):
             i.kill()
 
 def update_hitbox():
-    if not mario.bowser:
+    if mario.bowser==False:
         if mario.small:#insert small mario hitbox
             mario.image = mario.images[0]
             mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)
+
         else:#insert large mario hitbox
             mario.image = mario.IMAGES[0]
             mario.rect = mario.image.get_rect(midbottom=mario.rect.midbottom)

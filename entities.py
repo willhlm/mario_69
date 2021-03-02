@@ -153,9 +153,13 @@ class Player(pygame.sprite.Sprite):#mario
         # 2 - 4 = running right
         # 5 - 7 = running left
         if self.bowser==True:
-            self.images=self.IMAGES_B
-            self.IMAGES=self.IMAGES_B
-            self.IMAGES_flower=self.IMAGES_B
+            self.images=Player.IMAGES_B
+            self.IMAGES=Player.IMAGES_B
+            self.IMAGES_flower=Player.IMAGES_B
+        else:
+            self.images=Player.images
+            self.IMAGES=Player.IMAGES
+            self.IMAGES_flower=Player.IMAGES_flower
 
         if self.small:
             if(val in range(2,4)):
